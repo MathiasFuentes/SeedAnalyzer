@@ -1,21 +1,28 @@
 #ifndef CRITERIA_H
 #define CRITERIA_H
 
+#include <list.h>
+
 typedef struct{
     long long numeroAldeas;
     long long radioBusquedaEnChunks;
     double coordenadasIniciales[2];
-    char **biomasRequeridos;
-    int numeroBiomasRequeridos;
-    char **estructurasRequeridas;
-    int numeroEstructurasRequeridas;
+    List *biomasRequeridos;
+    List *estructurasRequeridas;
 } criterioBusqueda;
 
-criterioBusqueda *setDefaultCriterio() {};
+typedef struct BiomaNombre{
+    char *nombreEsp;
+    char *nombreCub;
+} BiomaNombre;
 
-void almacenarCriterios(criterioBusqueda *c) {};
+criterioBusqueda* setDefaultCriterio();
 
-void guardarCriteriosEnJSON(criterioBusqueda *c) {}
+void almacenarBioma(criterioBusqueda *c);
+
+void almacenarCriterios(criterioBusqueda *c);
+
+void guardarCriteriosEnJSON(criterioBusqueda *c);
 
 
 #endif
