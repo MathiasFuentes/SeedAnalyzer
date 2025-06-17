@@ -12,8 +12,11 @@ void limpiarPantalla() {
 
 void presioneEnterParaContinuar() {
     printf("Presione Enter para continuar...");
-    getchar();
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);  // Limpiar buffer
+    getchar(); // Esperar Enter real
 }
+
 
 void limpiarBuffer() {
     int c;
