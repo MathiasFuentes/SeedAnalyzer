@@ -1,6 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "extra.h"
+#include "criteria.h"
+
+/*
+    LINK CUBIOMES: https://github.com/Cubitect/cubiomes 
+
+    PARA EJECUTAR Y COMPILAR:
+        mingw32-make
+        ./seed_analyzer
+*/
 
 // Primeros interactuables del programa.
 
@@ -50,9 +59,15 @@ void menuOpcion4(){
     puts("OPCION NO IMPLEMENTADA");
 }
 
+// 
+
 void ejecutarOpcion1(){
     limpiarPantalla();
     menuOpcion1();
+
+    // Se inicializa un criterio de búsqueda con valores por defecto.
+    criterioBusqueda *criterioUsuario = setDefaultCriterio();
+
     int opcion = leerOpcion(1,5);
     do {
         switch(opcion) {
@@ -83,7 +98,7 @@ int main(){
         menuPrincipal();
         printf("Seleccione una opción: ");
         opcion = leerOpcion(1, 5);
-        
+        limpiarPantalla();
         switch(opcion) {
             case 1:
                 ejecutarOpcion1();
@@ -104,7 +119,6 @@ int main(){
                 puts("Opción no válida, por favor intente de nuevo.");
         }
         presioneEnterParaContinuar();
-        limpiarPantalla();
     } while(opcion != 5);
     
     return 0;
