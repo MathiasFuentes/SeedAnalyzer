@@ -68,7 +68,10 @@ void ejecutarOpcion1(){
     // Se inicializa un criterio de búsqueda con valores por defecto.
     criterioBusqueda *criterioUsuario = setDefaultCriterio();
 
-    int opcion = leerOpcion(1,5);
+    int opcion = printf("\nSeleccione una opción: ");
+    scanf("%d", &opcion);
+    // limpiarBuffer();
+
     do {
         switch(opcion) {
             case 1:
@@ -89,6 +92,7 @@ void ejecutarOpcion1(){
             default:
                 puts("Opción no válida.");
         }
+        presioneEnterParaContinuar();
      }  while (opcion != 5);
 }
 
@@ -96,8 +100,9 @@ int main(){
     int opcion;
     do {
         menuPrincipal();
-        printf("Seleccione una opción: ");
-        opcion = leerOpcion(1, 5);
+
+        printf("Seleccione una opción: "); opcion = leerOpcion(1, 5);
+        
         limpiarPantalla();
         switch(opcion) {
             case 1:
