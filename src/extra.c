@@ -15,3 +15,7 @@ void presioneEnterParaContinuar() {
     getchar();
 }
 
+void limpiarBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) {}
+}

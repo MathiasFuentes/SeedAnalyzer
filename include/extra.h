@@ -5,4 +5,6 @@ void limpiarPantalla();
 
 void presioneEnterParaContinuar();
 
+void limpiarBuffer();
+
 #endif
