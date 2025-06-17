@@ -1,4 +1,6 @@
 #include "extra.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 void limpiarPantalla() {
 #ifdef _WIN32

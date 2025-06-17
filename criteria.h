@@ -11,6 +11,7 @@ typedef struct{
     int numeroEstructurasRequeridas;
 } criterioBusqueda;
 
+criterioBusqueda *setDefaultCriterio() {};
 
 void almacenarCriterios(criterioBusqueda *c) {};
 

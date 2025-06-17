@@ -11,7 +11,7 @@
         ./seed_analyzer
 */
 
-// Primeros interactuables del programa.
+// Funciones de comunicación con el usuario
 
 int leerOpcion(int min, int max) {
     int opcion;
@@ -59,7 +59,7 @@ void menuOpcion4(){
     puts("OPCION NO IMPLEMENTADA");
 }
 
-// 
+// Funciones interactivas del programa
 
 void ejecutarOpcion1(){
     limpiarPantalla();

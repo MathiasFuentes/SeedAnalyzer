@@ -3,7 +3,10 @@ CC = gcc
 CFLAGS = -Iinclude -Wall -lm
 
 # Archivos fuente
-SRC = main.c \
+SRC = seed_analyzer.c \
+      criteria.c \
+      src/extra.c \
+      src/cJSON.c \
       src/biomenoise.c \
       src/biomes.c \
       src/finders.c \
