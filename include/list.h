@@ -6,14 +6,13 @@ typedef struct Node {
   struct Node *next;
 } Node;
 
-struct List {
+typedef struct List {
   Node *head;
   Node *tail;
   Node *current;
   int size;
-};
+} List;
 
-typedef List List;
 
 // Esta función crea una lista vacía y devuelve un puntero a la lista.
 List *list_create();
@@ -57,5 +56,7 @@ int list_size(List* L);
 
 // Función que libera la memoria de una lista.
 void list_destroy_with(List* list, void (*free_data)(void*));
+
+void *list_index(List *L, int index);
 
 #endif

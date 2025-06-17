@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 List *list_create() {
   List *newList = (List *)malloc(sizeof(List));
   if (newList == NULL) {
@@ -208,4 +209,20 @@ void list_destroy_with(List* list, void (*free_data)(void*)) {
     }
 
     free(list);
+}
+
+void *list_index(List *L, int index) {
+    if (L == NULL || index < 0 || index >= L->size) return NULL;
+
+    Node *nodo = L->head;
+    int i = 0;
+
+    while (nodo != NULL && i < index) {
+        nodo = nodo->next;
+        i++;
+    }
+
+    L->current = nodo; // Actualiza el puntero actual
+
+    return nodo ? nodo->data : NULL;
 }
