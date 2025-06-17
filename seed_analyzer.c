@@ -3,12 +3,33 @@
 #include "extra.h"
 #include "criteria.h"
 
+#define TOTAL_BIOMAS 14
+
 /*
     LINK CUBIOMES: https://github.com/Cubitect/cubiomes 
 
     PARA EJECUTAR Y COMPILAR:
         mingw32-make
         ./seed_analyzer
+*/
+
+/*
+BiomaNombre listaBiomas[TOTAL_BIOMAS] = {
+    {"Campos de hongos", "mushroom_fields"},
+    {"Pradera", "plains"},
+    {"Bosque", "forest"},
+    {"Bosque de abedules", "birch_forest"},
+    {"Desierto", "desert"},
+    {"Taiga", "taiga"},
+    {"Selva", "jungle"},
+    {"Sabana", "savanna"},
+    {"Pantano", "swamp"},
+    {"Océano", "ocean"},
+    {"Océano cálido", "warm_ocean"},
+    {"Océano congelado", "frozen_ocean"},
+    {"Bosque oscuro", "dark_forest"},
+    {"Colinas de piedra", "stone_shore"}
+};
 */
 
 // Funciones de comunicación con el usuario
@@ -61,30 +82,27 @@ void menuOpcion4(){
 
 // Funciones interactivas del programa
 
-void ejecutarOpcion1(){
-    limpiarPantalla();
-    menuOpcion1();
-
-    // Se inicializa un criterio de búsqueda con valores por defecto.
-    criterioBusqueda *criterioUsuario = setDefaultCriterio();
-
-    int opcion = printf("\nSeleccione una opción: ");
-    scanf("%d", &opcion);
-    // limpiarBuffer();
+void ejecutarOpcion1(criterioBusqueda *c){
+    int opcion;
 
     do {
+        limpiarPantalla();
+        menuOpcion1();
+        printf("\nSeleccione una opción: ");
+        
+        opcion = leerOpcion(1, 5);
         switch(opcion) {
             case 1:
-                // Aquí iría la lógica para definir biomas
+                almacenarBiomas(c);
                 break;
             case 2:
-                // Aquí iría la lógica para definir estructuras
+                // lógica estructuras
                 break;
             case 3:
-                // Aquí iría la lógica para definir coordenadas
+                // lógica coordenadas
                 break;
             case 4:
-                // Aquí iría la lógica para definir el rango
+                // lógica rango
                 break;
             case 5:
                 puts("Volviendo al menú principal...");
@@ -92,21 +110,23 @@ void ejecutarOpcion1(){
             default:
                 puts("Opción no válida.");
         }
-        presioneEnterParaContinuar();
-     }  while (opcion != 5);
+
+        // presioneEnterParaContinuar();
+    } while (opcion != 5);
 }
+
 
 int main(){
     int opcion;
+    criterioBusqueda *criterioUsuario = setDefaultCriterio();
     do {
+        limpiarPantalla();
         menuPrincipal();
-
         printf("Seleccione una opción: "); opcion = leerOpcion(1, 5);
         
-        limpiarPantalla();
         switch(opcion) {
             case 1:
-                ejecutarOpcion1();
+                ejecutarOpcion1(criterioUsuario);
                 break;
             case 2:
                 menuOpcion2();
