@@ -5,6 +5,7 @@ CFLAGS = -Iinclude -Wall -lm
 # Archivos fuente
 SRC = seed_analyzer.c \
       criteria.c \
+      src/list.c \
       src/extra.c \
       src/cJSON.c \
       src/biomenoise.c \
