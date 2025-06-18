@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "extra.h"
 #include "criteria.h"
+#include "cargacriterios.h"
 
 #define TOTAL_BIOMAS 14
 
@@ -96,7 +97,7 @@ void ejecutarOpcion1(criterioBusqueda *c){
                 almacenarBiomas(c);
                 break;
             case 2:
-                // lógica estructuras
+                // lógica estructuras 
                 break;
             case 3:
                 // lógica coordenadas
@@ -129,7 +130,7 @@ int main(){
                 ejecutarOpcion1(criterioUsuario);
                 break;
             case 2:
-                menuOpcion2();
+                menuCargarCriterios(criterioUsuario);
                 break;
             case 3:
                 menuOpcion3();
