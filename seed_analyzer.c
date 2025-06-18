@@ -130,7 +130,8 @@ int main(){
                 ejecutarOpcion1(criterioUsuario);
                 break;
             case 2:
-                menuCargarCriterios(criterioUsuario);
+                //menuCargarCriterios(criterioUsuario);
+                puts("Cargando criterios existentes...");
                 break;
             case 3:
                 menuOpcion3();
