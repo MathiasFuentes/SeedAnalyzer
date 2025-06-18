@@ -50,6 +50,7 @@ criterioBusqueda* setDefaultCriterio() {
     return c;
 }
 
+
 /*
     Función que muestra los biomas disponibles para que el usuario pueda seleccionar.
     Se recorre la lista de biomas y se imprime su nombre en español y en inglés.
@@ -71,6 +72,7 @@ int compararBiomas(void *bioma1, void *bioma2) {
     return strcmp(((BiomaNombre *)bioma1)->nombreCub, ((BiomaNombre *)bioma2)->nombreCub);
 }
 
+
 /*
     Función que muestra los biomas seleccionados por el usuario.
     Si no hay biomas seleccionados, se informa al usuario.
@@ -78,15 +80,20 @@ int compararBiomas(void *bioma1, void *bioma2) {
 
 void mostrarBiomasSeleccionados(criterioBusqueda *c) {
     puts("========= Biomas Seleccionados =========");
-    if (c == NULL || c->biomasRequeridos == NULL || list_size(c->biomasRequeridos) == 0) {
+    
+    // Verifica si el criterio de búsqueda o la lista de biomas es nula
+    if (c == NULL || c->biomasRequeridos == NULL || list_size(c->biomasRequeridos) == 0) 
+    {
         puts("No hay biomas seleccionados.");
         presioneEnterParaContinuar();
         return;
     }
 
+    // Recorre la lista de biomas seleccionados y los muestra
     BiomaNombre *bioma = list_first(c->biomasRequeridos);
     int i = 1;
-    while (bioma != NULL) {
+    while (bioma != NULL)
+    {
         printf("%d. %s (%s)\n", i++, bioma->nombreEsp, bioma->nombreCub);
         bioma = list_next(c->biomasRequeridos);
     }
@@ -105,14 +112,16 @@ void agregarBioma(criterioBusqueda *c, BiomaNombre listaBiomas[]) {
     puts("========= Agregar Bioma =========");
 
     // Error de memoria
-    if (c == NULL || c->biomasRequeridos == NULL) {
+    if (c == NULL || c->biomasRequeridos == NULL)
+    {
         puts("Error: El criterio de búsqueda o la lista de biomas es nula");
         presioneEnterParaContinuar();
         return;
     }
 
     // Verifica si ya se han agregado 3 biomas
-    if (list_size(c->biomasRequeridos) >= 3) {
+    if (list_size(c->biomasRequeridos) >= 3)
+    {
         puts("Ya se han agregado 3 biomas. No se pueden agregar más.");
         presioneEnterParaContinuar();
         return;
@@ -121,11 +130,15 @@ void agregarBioma(criterioBusqueda *c, BiomaNombre listaBiomas[]) {
     // Muestra los biomas disponibles
     puts("Seleccione uno de los siguientes biomas para agregar:");
     mostrarBiomasDisponibles(listaBiomas);
+    puts("");
 
     // Solicita al usuario que ingrese el número del bioma
     int opcion;
     printf("Ingrese el número del bioma (1-%d): ", TOTAL_BIOMAS);
-    if (scanf("%d", &opcion) != 1) {
+
+    // Verifica si la entrada es válida
+    if (scanf("%d", &opcion) != 1)
+    {
         puts("Entrada no válida.");
         while (getchar() != '\n'); // Limpiar buffer
         presioneEnterParaContinuar();
@@ -137,26 +150,29 @@ void agregarBioma(criterioBusqueda *c, BiomaNombre listaBiomas[]) {
     strcpy(nuevoBioma.nombreEsp, listaBiomas[opcion - 1].nombreEsp);
     strcpy(nuevoBioma.nombreCub, listaBiomas[opcion - 1].nombreCub);
 
-    if (list_exist(c->biomasRequeridos, &nuevoBioma, compararBiomas)) {
+    // Verifica si el bioma ya existe en la lista de biomas requeridos
+    if (list_exist(c->biomasRequeridos, &nuevoBioma, compararBiomas))
+    {
         puts("Este bioma ya fue agregado, selecciona otro.");
         presioneEnterParaContinuar();
         return;
     }
 
+    // Asigna memoria para el nuevo bioma y lo agrega a la lista
     BiomaNombre *biomaCopiado = malloc(sizeof(BiomaNombre));
-    if (!biomaCopiado) {
+    if (!biomaCopiado)
+    {
         puts("Error al asignar memoria para el bioma.");
         presioneEnterParaContinuar();
         return;
     }
+
+
     *biomaCopiado = nuevoBioma;
-
     list_pushBack(c->biomasRequeridos, biomaCopiado);
-
     printf("Bioma '%s' agregado correctamente.\n", nuevoBioma.nombreEsp);
     presioneEnterParaContinuar();
 }
-
 
 void eliminarBioma(criterioBusqueda *c){
     limpiarPantalla();
@@ -175,14 +191,21 @@ void eliminarBioma(criterioBusqueda *c){
 
     puts("Biomas seleccionados:");
     BiomaNombre *bioma = list_first(c->biomasRequeridos);
-    while (list_next(c->biomasRequeridos) != NULL) {
-        printf("%d. %s (%s)\n", list_size(c->biomasRequeridos), bioma->nombreEsp, bioma->nombreCub);
+    int i = 1;
+    while (bioma != NULL) {
+        printf("%d. %s (%s)\n", i++, bioma->nombreEsp, bioma->nombreCub);
         bioma = list_next(c->biomasRequeridos);
     }
 
+    puts("\nSeleccione 0 para cancelar la eliminación.");
     printf("Seleccione el número del bioma que desea eliminar (1-%d): ", c->biomasRequeridos->size);
     int opcion; scanf("%d", &opcion);
 
+    if (opcion == 0) {
+        puts("Eliminación cancelada.");
+        presioneEnterParaContinuar();
+        return;
+    }
     if (opcion < 1 || opcion > c->biomasRequeridos->size) {
         puts("Opción no válida.");
         presioneEnterParaContinuar();
@@ -190,7 +213,6 @@ void eliminarBioma(criterioBusqueda *c){
     }
 
     BiomaNombre eliminar = *(BiomaNombre*)list_index(c->biomasRequeridos, opcion - 1);
-    
     if (list_exist(c->biomasRequeridos, &eliminar, compararBiomas)) {
         list_popCurrent(c->biomasRequeridos);
         printf("Bioma %s eliminado correctamente.\n", eliminar.nombreEsp);
@@ -204,8 +226,30 @@ void eliminarBioma(criterioBusqueda *c){
 
 }
 
+void eliminarTodosLosBiomas(criterioBusqueda *c) {
+    puts("========= Eliminar Todos los Biomas =========");
+    printf("¿Estás seguro de que deseas eliminar todos los biomas seleccionados? (s/n): ");
+    char confirmacion;
+    scanf(" %c", &confirmacion);
+    if (confirmacion != 's' && confirmacion != 'S') {
+        puts("Eliminación cancelada.");
+        presioneEnterParaContinuar();
+        return;
+    }
+
+    if (c == NULL || c->biomasRequeridos == NULL) {
+        puts("Error: El criterio de búsqueda o la lista de biomas es nula");
+        presioneEnterParaContinuar();
+        return;
+    }
+    list_clean(c->biomasRequeridos);
+    puts("Todos los biomas han sido eliminados.");
+    presioneEnterParaContinuar();
+}
+
 void almacenarBiomas(criterioBusqueda *c) {
     limpiarPantalla();
+
     if (c == NULL){
         puts("========= Selección de Biomas a Buscar =========");
         puts("Error: El criterio de búsqueda es nulo");
@@ -229,8 +273,8 @@ void almacenarBiomas(criterioBusqueda *c) {
                 eliminarBioma(c);
                 break;
             case 2:
-                list_clean(c->biomasRequeridos);
-                puts("Todos los biomas han sido eliminados.");
+                limpiarPantalla();
+                eliminarTodosLosBiomas(c);
                 break;
             case 3:
                 return;  // Aquí sí se sale correctamente
@@ -245,6 +289,7 @@ void almacenarBiomas(criterioBusqueda *c) {
     int opcion; 
     do
     {
+        limpiarPantalla();
         puts("========= Selección de Biomas a Buscar =========");
         puts("1. Agregar Bioma");
         puts("2. Mostrar Biomas Seleccionados");
@@ -269,13 +314,12 @@ void almacenarBiomas(criterioBusqueda *c) {
                 eliminarBioma(c);
                 break;
             case 4:
-                list_clean(c->biomasRequeridos);
-                puts("Todos los biomas han sido eliminados.");
+                limpiarPantalla();
+                eliminarTodosLosBiomas(c);
                 break;
             case 5:
-
                 puts("Volviendo al menú principal...");
-                return;
+                break;
             default:
                 puts("Opción no válida. Por favor, intente de nuevo.");
                 break;
