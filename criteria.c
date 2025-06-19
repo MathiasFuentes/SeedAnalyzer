@@ -134,13 +134,13 @@ void agregarBioma(criterioBusqueda *c, BiomaNombre listaBiomas[]) {
 
     // Solicita al usuario que ingrese el número del bioma
     int opcion;
-    printf("Ingrese el número del bioma (1-%d): ", TOTAL_BIOMAS);
+    printf("Ingrese el número del bioma que desea agregar (1-%d): ", TOTAL_BIOMAS);
+    opcion = leerOpcion(1, TOTAL_BIOMAS);
 
     // Verifica si la entrada es válida
-    if (scanf("%d", &opcion) != 1)
+    if (opcion < 1 || opcion > TOTAL_BIOMAS)
     {
         puts("Entrada no válida.");
-        while (getchar() != '\n'); // Limpiar buffer
         presioneEnterParaContinuar();
         return;
     }
@@ -166,7 +166,6 @@ void agregarBioma(criterioBusqueda *c, BiomaNombre listaBiomas[]) {
         presioneEnterParaContinuar();
         return;
     }
-
 
     *biomaCopiado = nuevoBioma;
     list_pushBack(c->biomasRequeridos, biomaCopiado);
@@ -199,7 +198,8 @@ void eliminarBioma(criterioBusqueda *c){
 
     puts("\nSeleccione 0 para cancelar la eliminación.");
     printf("Seleccione el número del bioma que desea eliminar (1-%d): ", c->biomasRequeridos->size);
-    int opcion; scanf("%d", &opcion);
+    int opcion;
+    opcion = leerOpcion(0, c->biomasRequeridos->size);
 
     if (opcion == 0) {
         puts("Eliminación cancelada.");
@@ -228,20 +228,43 @@ void eliminarBioma(criterioBusqueda *c){
 
 void eliminarTodosLosBiomas(criterioBusqueda *c) {
     puts("========= Eliminar Todos los Biomas =========");
+
+    if (c->biomasRequeridos->size == 0) {
+        puts("No hay biomas seleccionados para eliminar.");
+        presioneEnterParaContinuar();
+        return;
+    }
+
     printf("¿Estás seguro de que deseas eliminar todos los biomas seleccionados? (s/n): ");
-    char confirmacion;
-    scanf(" %c", &confirmacion);
-    if (confirmacion != 's' && confirmacion != 'S') {
+    fflush(stdout);
+
+    // Limpiar el buffer de entrada para evitar problemas con fgets
+    char buffer[1028];
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL)
+    {
+        puts("Entrada inválida.");
+        presioneEnterParaContinuar();
+        return;
+    }
+
+    // Guarda la primera letra de la entrada para confirmar la eliminación
+    char confirmacion = buffer[0];
+    if (confirmacion != 's' && confirmacion != 'S')
+    {
         puts("Eliminación cancelada.");
         presioneEnterParaContinuar();
         return;
     }
 
-    if (c == NULL || c->biomasRequeridos == NULL) {
+    // Verifica si el criterio de búsqueda o la lista de biomas es nula
+    if (c == NULL || c->biomasRequeridos == NULL)
+    {
         puts("Error: El criterio de búsqueda o la lista de biomas es nula");
         presioneEnterParaContinuar();
         return;
     }
+
+    // Limpia la lista de biomas requeridos
     list_clean(c->biomasRequeridos);
     puts("Todos los biomas han sido eliminados.");
     presioneEnterParaContinuar();
@@ -259,14 +282,14 @@ void almacenarBiomas(criterioBusqueda *c) {
 
     while (list_size(c->biomasRequeridos) >= MAX_BIOMAS_USUARIO) {
         int opcion;
-        puts("Advertencia: Límite de Biomas Seleccionados");
+        puts("Advertencia: Superaste el Límite de Biomas Seleccionados");
         puts("Opciones:");
         puts("1. Eliminar un bioma seleccionado");
         puts("2. Eliminar todos los biomas seleccionados");
         puts("3. Volver al menú principal");
 
         printf("Seleccione una opción: ");
-        scanf("%d", &opcion);
+        opcion = leerOpcion(1, 3);
 
         switch (opcion) {
             case 1:
@@ -297,7 +320,7 @@ void almacenarBiomas(criterioBusqueda *c) {
         puts("4. Eliminar todos los biomas");
         puts("5. Volver al menú principal");
         printf("Seleccione una opción: ");
-        scanf("%d", &opcion);
+        opcion = leerOpcion(1, 5);
 
         switch(opcion)
         {
@@ -322,6 +345,7 @@ void almacenarBiomas(criterioBusqueda *c) {
                 break;
             default:
                 puts("Opción no válida. Por favor, intente de nuevo.");
+                presioneEnterParaContinuar();
                 break;
         }
     } while(opcion != 5);
