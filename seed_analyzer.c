@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include "extra.h"
 #include "criteria.h"
 #include "cargacriterios.h"
@@ -35,21 +37,9 @@ BiomaNombre listaBiomas[TOTAL_BIOMAS] = {
 
 // Funciones de comunicación con el usuario
 
-int leerOpcion(int min, int max) {
-    int opcion;
-    while (1) {
-        printf("Ingrese una opción (%d-%d): ", min, max);
-        if (scanf("%d", &opcion) != 1 || opcion < min || opcion > max) {
-            printf("Opción inválida. Intente de nuevo.\n");
-            while(getchar() != '\n'); // Limpiar el buffer
-        } else {
-            break;
-        }
-    }
-    return opcion;
-}
 
-void menuPrincipal(){
+void menuPrincipal()
+{
     puts("===== SeedAnalyzer Menu =====");
     puts("1. Crear nuevos criterios de búsqueda");
     puts("2. Cargar criterios existentes");
@@ -59,7 +49,8 @@ void menuPrincipal(){
     puts("=============================");
 }
 
-void menuOpcion1(){
+void menuOpcion1()
+{
     puts("===== Crear Nuevos Criterios =====");
     puts("1. Definir biomas deseados");
     puts("2. Definir estructuras deseadas");
@@ -86,13 +77,12 @@ void menuOpcion4(){
 void ejecutarOpcion1(criterioBusqueda *c){
     int opcion;
 
-    do {
+    do  {
         limpiarPantalla();
         menuOpcion1();
-        printf("\nSeleccione una opción: ");
-        
-        opcion = leerOpcion(1, 5);
-        switch(opcion) {
+        printf("\nSeleccione una opción: "); opcion = leerOpcion(1, 5);
+        switch(opcion)
+        {
             case 1:
                 almacenarBiomas(c);
                 break;
@@ -110,22 +100,25 @@ void ejecutarOpcion1(criterioBusqueda *c){
                 break;
             default:
                 puts("Opción no válida.");
+                presioneEnterParaContinuar();
         }
-
-        // presioneEnterParaContinuar();
-    } while (opcion != 5);
+    }   while (opcion != 5);
 }
 
 
 int main(){
-    int opcion;
+
     criterioBusqueda *criterioUsuario = setDefaultCriterio();
-    do {
+    int opcion;
+    
+    do
+    {
         limpiarPantalla();
         menuPrincipal();
         printf("Seleccione una opción: "); opcion = leerOpcion(1, 5);
         
-        switch(opcion) {
+        switch(opcion)
+        {
             case 1:
                 ejecutarOpcion1(criterioUsuario);
                 break;
