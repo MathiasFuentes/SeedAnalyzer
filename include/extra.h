@@ -7,4 +7,6 @@ void presioneEnterParaContinuar();
 
 void limpiarBuffer();
 
+int leerOpcion(int min, int max);
+
 #endif
