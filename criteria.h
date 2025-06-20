@@ -11,22 +11,22 @@ typedef struct{
     List *estructurasRequeridas;
 } criterioBusqueda;
 
-typedef struct BiomaNombre {
+typedef struct ID{
     char nombreEsp[64];
     char nombreCub[64];
-} BiomaNombre;
+} ID;
 
 criterioBusqueda* setDefaultCriterio();
 
-int compararBiomas(void *bioma1, void *bioma2);
+int compararID(void *ID1, void *ID2);
 
 void mostrarBiomasSeleccionados(criterioBusqueda *c);
 
-void agregarBioma(criterioBusqueda *c, BiomaNombre listaBiomas[]);
+void agregarBioma(criterioBusqueda *c, ID listaBiomas[]);
 
 void eliminarBioma(criterioBusqueda *c);
 
-void mostrarBiomasDisponibles(BiomaNombre listaBiomas[]);
+void mostrarBiomasDisponibles(ID listaBiomas[]);
 
 void almacenarBiomas(criterioBusqueda *c);
 

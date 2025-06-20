@@ -6,13 +6,15 @@
 #include <string.h>
 
 #define MAX_BIOMAS_USUARIO 3
+#define MAX_ESTRUCTURAS_USUARIO 3
 #define TOTAL_BIOMAS 14
+#define TOTAL_ESTRUCTURAS 8
 
 /* 
     Lista de los principales biomas de Minecraft con sus nombres en español y en inglés.
 */
 
-BiomaNombre listaBiomas[TOTAL_BIOMAS] = {
+ID listaBiomas[TOTAL_BIOMAS] = {
     {"Campos de hongos", "mushroom_fields"},
     {"Pradera", "plains"},
     {"Bosque", "forest"},
@@ -28,6 +30,18 @@ BiomaNombre listaBiomas[TOTAL_BIOMAS] = {
     {"Bosque oscuro", "dark_forest"},
     {"Colinas de piedra", "stone_shore"}
 };
+
+ID listaEstructuras[TOTAL_ESTRUCTURAS] = {
+    {"Aldea", "village"},
+    {"Templo del desierto", "desert_pyramid"},
+    {"Templo de la jungla", "jungle_pyramid"},
+    {"Poste de saqueadores", "pillager_outpost"},
+    {"Monumento oceánico", "ocean_monument"},
+    {"Fortaleza (Stronghold)", "stronghold"},
+    {"Resto de portal", "ruined_portal"},
+    {"Tesoro enterrado", "buried_treasure"}
+};
+
 
 /*
     Función que inicializa un criterio de búsqueda con valores por defecto.
@@ -51,16 +65,64 @@ criterioBusqueda* setDefaultCriterio() {
 }
 
 
+
+/*
+    Funcion que maneja el límite de selección de biomas o estructuras.
+    Si la lista alcanza el máximo de elementos permitidos, se le pide al usuario que elimine uno o todos los elementos seleccionados.
+*/
+
+int manejarLimiteSeleccion(List *lista, int maxElementos,
+                           void (*eliminarUno)(criterioBusqueda *),
+                           void (*eliminarTodos)(criterioBusqueda *),
+                           criterioBusqueda *c,
+                           const char *tipoElemento) {
+
+    while (list_size(lista) >= maxElementos) {
+        limpiarPantalla();
+        printf("Advertencia: Superaste el límite de %s seleccionados (%d máximo)\n", tipoElemento, maxElementos);
+        puts("Opciones:");
+        printf("1. Eliminar una selección\n");
+        printf("2. Eliminar todas las selecciones\n");
+        puts("3. Volver al menú principal");
+
+        printf("Seleccione una opción: ");
+        int opcion = leerOpcion(1, 3);
+
+        switch (opcion) {
+            case 1:
+                eliminarUno(c);
+                break;
+            case 2:
+                limpiarPantalla();
+                eliminarTodos(c);
+                break;
+            case 3:
+                puts("Volviendo al menú principal...");
+                presioneEnterParaContinuar();
+                return 0;
+            default:
+                puts("Opción no válida.");
+                presioneEnterParaContinuar();
+                break;
+        }
+        //presioneEnterParaContinuar();
+    }
+    return 1; // se puede continuar normalmente
+}
+
+
+
 /*
     Función que muestra los biomas disponibles para que el usuario pueda seleccionar.
     Se recorre la lista de biomas y se imprime su nombre en español y en inglés.
 */
 
-void mostrarBiomasDisponibles(BiomaNombre listaBiomas[]) {
+void mostrarBiomasDisponibles(ID listaBiomas[]) {
     for (int i = 0; i < TOTAL_BIOMAS; i++) {
         printf("%d. %s (%s)\n", i + 1, listaBiomas[i].nombreEsp, listaBiomas[i].nombreCub);
     }
 }
+
 
 
 /*
@@ -68,9 +130,10 @@ void mostrarBiomasDisponibles(BiomaNombre listaBiomas[]) {
     Se utiliza para ordenar o buscar biomas en la lista.
 */
 
-int compararBiomas(void *bioma1, void *bioma2) {
-    return strcmp(((BiomaNombre *)bioma1)->nombreCub, ((BiomaNombre *)bioma2)->nombreCub);
+int compararID(void *ID1, void *ID2) {
+    return strcmp(((ID *)ID1)->nombreCub, ((ID *)ID2)->nombreCub);
 }
+
 
 
 /*
@@ -90,7 +153,7 @@ void mostrarBiomasSeleccionados(criterioBusqueda *c) {
     }
 
     // Recorre la lista de biomas seleccionados y los muestra
-    BiomaNombre *bioma = list_first(c->biomasRequeridos);
+    ID *bioma = list_first(c->biomasRequeridos);
     int i = 1;
     while (bioma != NULL)
     {
@@ -100,6 +163,8 @@ void mostrarBiomasSeleccionados(criterioBusqueda *c) {
     presioneEnterParaContinuar();
 }
 
+
+
 /*
     Función que agrega un bioma a la lista de biomas requeridos del criterio de búsqueda.
     Muestra una lista de biomas disponibles y permite al usuario seleccionar uno.
@@ -107,7 +172,7 @@ void mostrarBiomasSeleccionados(criterioBusqueda *c) {
     Si el bioma ya existe en la lista, informa al usuario y no lo agrega.
 */
 
-void agregarBioma(criterioBusqueda *c, BiomaNombre listaBiomas[]) {
+void agregarBioma(criterioBusqueda *c, ID listaBiomas[]) {
     limpiarPantalla();
     puts("========= Agregar Bioma =========");
 
@@ -146,12 +211,12 @@ void agregarBioma(criterioBusqueda *c, BiomaNombre listaBiomas[]) {
     }
 
     // Guarda el bioma seleccionado
-    BiomaNombre nuevoBioma;
+    ID nuevoBioma;
     strcpy(nuevoBioma.nombreEsp, listaBiomas[opcion - 1].nombreEsp);
     strcpy(nuevoBioma.nombreCub, listaBiomas[opcion - 1].nombreCub);
 
     // Verifica si el bioma ya existe en la lista de biomas requeridos
-    if (list_exist(c->biomasRequeridos, &nuevoBioma, compararBiomas))
+    if (list_exist(c->biomasRequeridos, &nuevoBioma, compararID))
     {
         puts("Este bioma ya fue agregado, selecciona otro.");
         presioneEnterParaContinuar();
@@ -159,7 +224,7 @@ void agregarBioma(criterioBusqueda *c, BiomaNombre listaBiomas[]) {
     }
 
     // Asigna memoria para el nuevo bioma y lo agrega a la lista
-    BiomaNombre *biomaCopiado = malloc(sizeof(BiomaNombre));
+    ID *biomaCopiado = malloc(sizeof(ID));
     if (!biomaCopiado)
     {
         puts("Error al asignar memoria para el bioma.");
@@ -172,6 +237,14 @@ void agregarBioma(criterioBusqueda *c, BiomaNombre listaBiomas[]) {
     printf("Bioma '%s' agregado correctamente.\n", nuevoBioma.nombreEsp);
     presioneEnterParaContinuar();
 }
+
+
+
+/*
+    Función que elimina un bioma de la lista de biomas requeridos del criterio de búsqueda.
+    Muestra los biomas seleccionados y permite al usuario elegir cuál eliminar.
+    Si no hay biomas seleccionados, informa al usuario.
+*/
 
 void eliminarBioma(criterioBusqueda *c){
     limpiarPantalla();
@@ -189,7 +262,7 @@ void eliminarBioma(criterioBusqueda *c){
     }
 
     puts("Biomas seleccionados:");
-    BiomaNombre *bioma = list_first(c->biomasRequeridos);
+    ID *bioma = list_first(c->biomasRequeridos);
     int i = 1;
     while (bioma != NULL) {
         printf("%d. %s (%s)\n", i++, bioma->nombreEsp, bioma->nombreCub);
@@ -212,8 +285,8 @@ void eliminarBioma(criterioBusqueda *c){
         return;
     }
 
-    BiomaNombre eliminar = *(BiomaNombre*)list_index(c->biomasRequeridos, opcion - 1);
-    if (list_exist(c->biomasRequeridos, &eliminar, compararBiomas)) {
+    ID eliminar = *(ID*)list_index(c->biomasRequeridos, opcion - 1);
+    if (list_exist(c->biomasRequeridos, &eliminar, compararID)) {
         list_popCurrent(c->biomasRequeridos);
         printf("Bioma %s eliminado correctamente.\n", eliminar.nombreEsp);
         presioneEnterParaContinuar();
@@ -225,6 +298,14 @@ void eliminarBioma(criterioBusqueda *c){
     }
 
 }
+
+
+
+/*
+    Función que elimina todos los biomas seleccionados del criterio de búsqueda.
+    Pregunta al usuario si está seguro de eliminar todos los biomas.
+    Si no hay biomas seleccionados, informa al usuario.
+*/
 
 void eliminarTodosLosBiomas(criterioBusqueda *c) {
     puts("========= Eliminar Todos los Biomas =========");
@@ -270,6 +351,14 @@ void eliminarTodosLosBiomas(criterioBusqueda *c) {
     presioneEnterParaContinuar();
 }
 
+
+
+/*
+    Función que almacena los biomas seleccionados por el usuario en el criterio de búsqueda.
+    Permite al usuario agregar, eliminar o ver los biomas seleccionados.
+    Si el criterio de búsqueda es nulo, informa al usuario y no permite continuar.
+*/
+
 void almacenarBiomas(criterioBusqueda *c) {
     limpiarPantalla();
 
@@ -280,33 +369,10 @@ void almacenarBiomas(criterioBusqueda *c) {
         return;
     }
 
-    while (list_size(c->biomasRequeridos) >= MAX_BIOMAS_USUARIO) {
-        int opcion;
-        puts("Advertencia: Superaste el Límite de Biomas Seleccionados");
-        puts("Opciones:");
-        puts("1. Eliminar un bioma seleccionado");
-        puts("2. Eliminar todos los biomas seleccionados");
-        puts("3. Volver al menú principal");
-
-        printf("Seleccione una opción: ");
-        opcion = leerOpcion(1, 3);
-
-        switch (opcion) {
-            case 1:
-                eliminarBioma(c);
-                break;
-            case 2:
-                limpiarPantalla();
-                eliminarTodosLosBiomas(c);
-                break;
-            case 3:
-                return;  // Aquí sí se sale correctamente
-            default:
-                puts("Opción no válida.");
-                break;
-        }
-        presioneEnterParaContinuar();
+    if (!manejarLimiteSeleccion(c->biomasRequeridos, MAX_BIOMAS_USUARIO, eliminarBioma, eliminarTodosLosBiomas, c, "biomas")) {
+    return;
     }
+
 
 
     int opcion; 
@@ -352,6 +418,9 @@ void almacenarBiomas(criterioBusqueda *c) {
     presioneEnterParaContinuar();
     return;
 }
+
+
+
 
 void almacenarCriterios(criterioBusqueda *c) {
     // Implementación pendiente.

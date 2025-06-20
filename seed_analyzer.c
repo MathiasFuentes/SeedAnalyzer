@@ -16,25 +16,6 @@
         ./seed_analyzer
 */
 
-/*
-BiomaNombre listaBiomas[TOTAL_BIOMAS] = {
-    {"Campos de hongos", "mushroom_fields"},
-    {"Pradera", "plains"},
-    {"Bosque", "forest"},
-    {"Bosque de abedules", "birch_forest"},
-    {"Desierto", "desert"},
-    {"Taiga", "taiga"},
-    {"Selva", "jungle"},
-    {"Sabana", "savanna"},
-    {"Pantano", "swamp"},
-    {"Océano", "ocean"},
-    {"Océano cálido", "warm_ocean"},
-    {"Océano congelado", "frozen_ocean"},
-    {"Bosque oscuro", "dark_forest"},
-    {"Colinas de piedra", "stone_shore"}
-};
-*/
-
 // Funciones de comunicación con el usuario
 
 
@@ -87,7 +68,7 @@ void ejecutarOpcion1(criterioBusqueda *c){
                 almacenarBiomas(c);
                 break;
             case 2:
-                // lógica estructuras 
+                //almacenarEstructuras(c);
                 break;
             case 3:
                 // lógica coordenadas
@@ -110,7 +91,7 @@ int main(){
 
     criterioBusqueda *criterioUsuario = setDefaultCriterio();
     int opcion;
-    
+
     do
     {
         limpiarPantalla();
