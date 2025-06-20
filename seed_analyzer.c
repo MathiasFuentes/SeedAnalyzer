@@ -7,7 +7,10 @@
 #include "cargacriterios.h"
 
 #define TOTAL_BIOMAS 14
-
+#define MAX_BIOMAS_USUARIO 3
+#define MAX_ESTRUCTURAS_USUARIO 3
+#define MAX_COORDENADAS_USUARIO 2
+#define MAX_RANGO_USUARIO 1
 /*
     LINK CUBIOMES: https://github.com/Cubitect/cubiomes 
 
@@ -26,7 +29,7 @@ void menuPrincipal()
     puts("2. Cargar criterios existentes");
     puts("3. Ejecutar análisis con criterios actuales");
     puts("4. Visualizar Resultados");
-    puts("5. Salir");
+    puts("5. Salir del programa");
     puts("=============================");
 }
 
@@ -37,7 +40,8 @@ void menuOpcion1()
     puts("2. Definir estructuras deseadas");
     puts("3. Definir coordenadas específicas");
     puts("4. Definir rango de búsqueda");
-    puts("5. Volver al menú principal");
+    puts("5. Resumen de criterios seleccionados");
+    puts("6. Volver al menú principal");
     puts("===================================");
 }
 
@@ -61,29 +65,32 @@ void ejecutarOpcion1(criterioBusqueda *c){
     do  {
         limpiarPantalla();
         menuOpcion1();
-        printf("\nSeleccione una opción: "); opcion = leerOpcion(1, 5);
+        printf("\nSeleccione una opción: "); opcion = leerOpcion(1, 6);
         switch(opcion)
         {
             case 1:
-                almacenarBiomas(c);
+                almacenarCriterio(c->biomasRequeridos, "Biomas", MAX_BIOMAS_USUARIO);
                 break;
             case 2:
-                //almacenarEstructuras(c);
+                almacenarCriterio(c->estructurasRequeridas, "Estructuras", MAX_ESTRUCTURAS_USUARIO);
                 break;
             case 3:
-                // lógica coordenadas
+                almacenarCriterio(c->coordenadasIniciales, "Coordenadas", MAX_COORDENADAS_USUARIO);
                 break;
             case 4:
-                // lógica rango
+                almacenarCriterio(c->radioBusquedaEnChunks, "Rango", MAX_RANGO_USUARIO);
                 break;
             case 5:
+                resumenCriterios(c);
+                break;
+            case 6:
                 puts("Volviendo al menú principal...");
                 break;
             default:
                 puts("Opción no válida.");
                 presioneEnterParaContinuar();
         }
-    }   while (opcion != 5);
+    }   while (opcion != 6);
 }
 
 

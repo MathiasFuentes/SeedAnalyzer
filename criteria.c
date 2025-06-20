@@ -7,6 +7,9 @@
 
 #define MAX_BIOMAS_USUARIO 3
 #define MAX_ESTRUCTURAS_USUARIO 3
+#define MAX_COORDENADAS_USUARIO 2
+#define MAX_RANGO_USUARIO 1
+
 #define TOTAL_BIOMAS 14
 #define TOTAL_ESTRUCTURAS 8
 
@@ -14,7 +17,7 @@
     Lista de los principales biomas de Minecraft con sus nombres en español y en inglés.
 */
 
-ID listaBiomas[TOTAL_BIOMAS] = {
+ID Biomas[TOTAL_BIOMAS] = {
     {"Campos de hongos", "mushroom_fields"},
     {"Pradera", "plains"},
     {"Bosque", "forest"},
@@ -31,7 +34,7 @@ ID listaBiomas[TOTAL_BIOMAS] = {
     {"Colinas de piedra", "stone_shore"}
 };
 
-ID listaEstructuras[TOTAL_ESTRUCTURAS] = {
+ID Estructuras[TOTAL_ESTRUCTURAS] = {
     {"Aldea", "village"},
     {"Templo del desierto", "desert_pyramid"},
     {"Templo de la jungla", "jungle_pyramid"},
@@ -55,67 +58,12 @@ criterioBusqueda* setDefaultCriterio() {
         fprintf(stderr, "Error al asignar memoria para criterioBusqueda.\n");
         exit(EXIT_FAILURE);
     }
-    c->numeroAldeas = 0;
-    c->radioBusquedaEnChunks = 128; // Valor por defecto, puede ser ajustado
-    c->coordenadasIniciales[0] = 0.0; // Coordenadas (0,0) por defecto
-    c->coordenadasIniciales[1] = 0.0;
+    c->radioBusquedaEnChunks = list_create();
+    c->coordenadasIniciales = list_create();
     c->biomasRequeridos = list_create();
     c->estructurasRequeridas = list_create();
     return c;
 }
-
-
-
-/*
-    Funcion que maneja el límite de selección de biomas o estructuras.
-    Si la lista alcanza el máximo de elementos permitidos, se le pide al usuario que elimine uno o todos los elementos seleccionados.
-*/
-
-int manejarLimiteSeleccion(List *lista, int maxElementos,
-                           void (*eliminarUno)(criterioBusqueda *),
-                           void (*eliminarTodos)(criterioBusqueda *),
-                           criterioBusqueda *c,
-                           const char *tipoElemento) {
-
-    while (list_size(lista) >= maxElementos) {
-        limpiarPantalla();
-        printf("Advertencia: Superaste el límite de %s seleccionados (%d máximo)\n", tipoElemento, maxElementos);
-        puts("Opciones:");
-        printf("1. Eliminar una selección\n");
-        printf("2. Eliminar todas las selecciones\n");
-        puts("3. Volver al menú principal");
-
-        printf("Seleccione una opción: ");
-        int opcion = leerOpcion(1, 3);
-
-        switch (opcion) {
-            case 1:
-                eliminarUno(c);
-                break;
-            case 2:
-                limpiarPantalla();
-                eliminarTodos(c);
-                break;
-            case 3:
-                puts("Volviendo al menú principal...");
-                presioneEnterParaContinuar();
-                return 0;
-            default:
-                puts("Opción no válida.");
-                presioneEnterParaContinuar();
-                break;
-        }
-        //presioneEnterParaContinuar();
-    }
-    return 1; // se puede continuar normalmente
-}
-
-
-
-/*
-    Función que muestra los biomas disponibles para que el usuario pueda seleccionar.
-    Se recorre la lista de biomas y se imprime su nombre en español y en inglés.
-*/
 
 void mostrarBiomasDisponibles(ID listaBiomas[]) {
     for (int i = 0; i < TOTAL_BIOMAS; i++) {
@@ -123,304 +71,404 @@ void mostrarBiomasDisponibles(ID listaBiomas[]) {
     }
 }
 
-
-
-/*
-    Función auxiliar que compara dos biomas por su nombre técnico.
-    Se utiliza para ordenar o buscar biomas en la lista.
-*/
+void mostrarEstructurasDisponibles(ID listaEstructuras[]) {
+    for (int i = 0; i < TOTAL_ESTRUCTURAS; i++) {
+        printf("%d. %s (%s)\n", i + 1, listaEstructuras[i].nombreEsp, listaEstructuras[i].nombreCub);
+    }
+}
 
 int compararID(void *ID1, void *ID2) {
     return strcmp(((ID *)ID1)->nombreCub, ((ID *)ID2)->nombreCub);
 }
 
-
-
-/*
-    Función que muestra los biomas seleccionados por el usuario.
-    Si no hay biomas seleccionados, se informa al usuario.
-*/
-
-void mostrarBiomasSeleccionados(criterioBusqueda *c) {
-    puts("========= Biomas Seleccionados =========");
-    
-    // Verifica si el criterio de búsqueda o la lista de biomas es nula
-    if (c == NULL || c->biomasRequeridos == NULL || list_size(c->biomasRequeridos) == 0) 
-    {
-        puts("No hay biomas seleccionados.");
-        presioneEnterParaContinuar();
-        return;
-    }
-
-    // Recorre la lista de biomas seleccionados y los muestra
-    ID *bioma = list_first(c->biomasRequeridos);
-    int i = 1;
-    while (bioma != NULL)
-    {
-        printf("%d. %s (%s)\n", i++, bioma->nombreEsp, bioma->nombreCub);
-        bioma = list_next(c->biomasRequeridos);
-    }
-    presioneEnterParaContinuar();
-}
-
-
-
-/*
-    Función que agrega un bioma a la lista de biomas requeridos del criterio de búsqueda.
-    Muestra una lista de biomas disponibles y permite al usuario seleccionar uno.
-    Si ya se han agregado 3 biomas, no permite agregar más.
-    Si el bioma ya existe en la lista, informa al usuario y no lo agrega.
-*/
-
-void agregarBioma(criterioBusqueda *c, ID listaBiomas[]) {
+void eliminarTodasLasSelecciones(List *listaCriterios) {
     limpiarPantalla();
-    puts("========= Agregar Bioma =========");
+    puts("========= Eliminar Todas las Selecciones =========");
 
-    // Error de memoria
-    if (c == NULL || c->biomasRequeridos == NULL)
-    {
-        puts("Error: El criterio de búsqueda o la lista de biomas es nula");
+    if (listaCriterios == NULL || list_size(listaCriterios) == 0) {
+        puts("No hay selecciones para eliminar.");
         presioneEnterParaContinuar();
         return;
     }
 
-    // Verifica si ya se han agregado 3 biomas
-    if (list_size(c->biomasRequeridos) >= 3)
-    {
-        puts("Ya se han agregado 3 biomas. No se pueden agregar más.");
-        presioneEnterParaContinuar();
-        return;
-    }
-
-    // Muestra los biomas disponibles
-    puts("Seleccione uno de los siguientes biomas para agregar:");
-    mostrarBiomasDisponibles(listaBiomas);
-    puts("");
-
-    // Solicita al usuario que ingrese el número del bioma
-    int opcion;
-    printf("Ingrese el número del bioma que desea agregar (1-%d): ", TOTAL_BIOMAS);
-    opcion = leerOpcion(1, TOTAL_BIOMAS);
-
-    // Verifica si la entrada es válida
-    if (opcion < 1 || opcion > TOTAL_BIOMAS)
-    {
-        puts("Entrada no válida.");
-        presioneEnterParaContinuar();
-        return;
-    }
-
-    // Guarda el bioma seleccionado
-    ID nuevoBioma;
-    strcpy(nuevoBioma.nombreEsp, listaBiomas[opcion - 1].nombreEsp);
-    strcpy(nuevoBioma.nombreCub, listaBiomas[opcion - 1].nombreCub);
-
-    // Verifica si el bioma ya existe en la lista de biomas requeridos
-    if (list_exist(c->biomasRequeridos, &nuevoBioma, compararID))
-    {
-        puts("Este bioma ya fue agregado, selecciona otro.");
-        presioneEnterParaContinuar();
-        return;
-    }
-
-    // Asigna memoria para el nuevo bioma y lo agrega a la lista
-    ID *biomaCopiado = malloc(sizeof(ID));
-    if (!biomaCopiado)
-    {
-        puts("Error al asignar memoria para el bioma.");
-        presioneEnterParaContinuar();
-        return;
-    }
-
-    *biomaCopiado = nuevoBioma;
-    list_pushBack(c->biomasRequeridos, biomaCopiado);
-    printf("Bioma '%s' agregado correctamente.\n", nuevoBioma.nombreEsp);
-    presioneEnterParaContinuar();
-}
-
-
-
-/*
-    Función que elimina un bioma de la lista de biomas requeridos del criterio de búsqueda.
-    Muestra los biomas seleccionados y permite al usuario elegir cuál eliminar.
-    Si no hay biomas seleccionados, informa al usuario.
-*/
-
-void eliminarBioma(criterioBusqueda *c){
-    limpiarPantalla();
-    puts("========= Eliminar Bioma =========");
-    if (c == NULL || c->biomasRequeridos == NULL) {
-        puts("Error: El criterio de búsqueda o la lista de biomas es nula");
-        presioneEnterParaContinuar();
-        return;
-    }
-
-    if (c->biomasRequeridos->size == 0) {
-        puts("No hay biomas seleccionados para eliminar.");
-        presioneEnterParaContinuar();
-        return;
-    }
-
-    puts("Biomas seleccionados:");
-    ID *bioma = list_first(c->biomasRequeridos);
-    int i = 1;
-    while (bioma != NULL) {
-        printf("%d. %s (%s)\n", i++, bioma->nombreEsp, bioma->nombreCub);
-        bioma = list_next(c->biomasRequeridos);
-    }
-
-    puts("\nSeleccione 0 para cancelar la eliminación.");
-    printf("Seleccione el número del bioma que desea eliminar (1-%d): ", c->biomasRequeridos->size);
-    int opcion;
-    opcion = leerOpcion(0, c->biomasRequeridos->size);
-
-    if (opcion == 0) {
-        puts("Eliminación cancelada.");
-        presioneEnterParaContinuar();
-        return;
-    }
-    if (opcion < 1 || opcion > c->biomasRequeridos->size) {
-        puts("Opción no válida.");
-        presioneEnterParaContinuar();
-        return;
-    }
-
-    ID eliminar = *(ID*)list_index(c->biomasRequeridos, opcion - 1);
-    if (list_exist(c->biomasRequeridos, &eliminar, compararID)) {
-        list_popCurrent(c->biomasRequeridos);
-        printf("Bioma %s eliminado correctamente.\n", eliminar.nombreEsp);
-        presioneEnterParaContinuar();
-        return;
-    } else {
-        puts("El bioma seleccionado no existe en la lista.");
-        presioneEnterParaContinuar();
-        return;
-    }
-
-}
-
-
-
-/*
-    Función que elimina todos los biomas seleccionados del criterio de búsqueda.
-    Pregunta al usuario si está seguro de eliminar todos los biomas.
-    Si no hay biomas seleccionados, informa al usuario.
-*/
-
-void eliminarTodosLosBiomas(criterioBusqueda *c) {
-    puts("========= Eliminar Todos los Biomas =========");
-
-    if (c->biomasRequeridos->size == 0) {
-        puts("No hay biomas seleccionados para eliminar.");
-        presioneEnterParaContinuar();
-        return;
-    }
-
-    printf("¿Estás seguro de que deseas eliminar todos los biomas seleccionados? (s/n): ");
+    printf("¿Estás seguro de que deseas eliminar todas las selecciones? (s/n): ");
     fflush(stdout);
 
-    // Limpiar el buffer de entrada para evitar problemas con fgets
-    char buffer[1028];
-    if (fgets(buffer, sizeof(buffer), stdin) == NULL)
-    {
+    char buffer[32];
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
         puts("Entrada inválida.");
         presioneEnterParaContinuar();
         return;
     }
 
-    // Guarda la primera letra de la entrada para confirmar la eliminación
-    char confirmacion = buffer[0];
-    if (confirmacion != 's' && confirmacion != 'S')
-    {
+    // Validar que la entrada sea exactamente "s\n" o "S\n"
+    if (strcmp(buffer, "s\n") != 0 && strcmp(buffer, "S\n") != 0) {
         puts("Eliminación cancelada.");
         presioneEnterParaContinuar();
         return;
     }
 
-    // Verifica si el criterio de búsqueda o la lista de biomas es nula
-    if (c == NULL || c->biomasRequeridos == NULL)
-    {
-        puts("Error: El criterio de búsqueda o la lista de biomas es nula");
-        presioneEnterParaContinuar();
-        return;
-    }
-
-    // Limpia la lista de biomas requeridos
-    list_clean(c->biomasRequeridos);
-    puts("Todos los biomas han sido eliminados.");
+    list_clean(listaCriterios);
+    puts("Todas las selecciones han sido eliminadas.");
     presioneEnterParaContinuar();
 }
 
+void seleccionPorConsola(List* listaCriterio, char* nombreCriterio, int MAX) {
+    
+    if (strcmp(nombreCriterio, "Coordenadas") == 0){
+        
+        int x, z;
+        puts("Advertencia: Las coordenadas deben estar en el rango de -1000 a 1000.");
 
+        printf("\nIngrese la coordenada inicial en x: ");
+        x = leerOpcion(-1000, 1000);
+        if (x == -1)
+        {
+            puts("Entrada no válida. Debe ingresar un número entre -1000 y 1000.");
+            presioneEnterParaContinuar();
+            return;
+        }
 
-/*
-    Función que almacena los biomas seleccionados por el usuario en el criterio de búsqueda.
-    Permite al usuario agregar, eliminar o ver los biomas seleccionados.
-    Si el criterio de búsqueda es nulo, informa al usuario y no permite continuar.
-*/
+        printf("\nIngrese la coordenada inicial en z: ");
+        z = leerOpcion(-1000, 1000);
+        if (z == -1)
+        {
+            puts("Entrada no válida. Debe ingresar un número entre -1000 y 1000.");
+            presioneEnterParaContinuar();
+            return;
+        }
 
-void almacenarBiomas(criterioBusqueda *c) {
-    limpiarPantalla();
+        int *xptr = malloc(sizeof(int));
+        if (xptr == NULL)
+        {
+            puts("Error al asignar memoria para la coordenada x.");
+            presioneEnterParaContinuar();
+            return;
+        }
 
-    if (c == NULL){
-        puts("========= Selección de Biomas a Buscar =========");
-        puts("Error: El criterio de búsqueda es nulo");
+        int *zptr = malloc(sizeof(int));
+        if (zptr == NULL)
+        {
+            puts("Error al asignar memoria para la coordenada z.");
+            presioneEnterParaContinuar();
+            return;
+        }
+
+        *xptr = x;
+        *zptr = z;
+
+        list_pushBack(listaCriterio, xptr);
+        list_pushBack(listaCriterio, zptr);
+
+        printf("Coordenadas (%d, %d) agregadas correctamente.\n", x, z);
         presioneEnterParaContinuar();
         return;
     }
 
-    if (!manejarLimiteSeleccion(c->biomasRequeridos, MAX_BIOMAS_USUARIO, eliminarBioma, eliminarTodosLosBiomas, c, "biomas")) {
-    return;
+    if (strcmp(nombreCriterio, "Rango") == 0){
+        
+        int rango;
+        puts("Advertencias: El rango se mide en chunks (regiones de 16 x 16 bloques).");
+        puts("             El rango debe ser menor a 1000.");
+
+        printf("\nIngrese el rango de búsqueda en chunks: ");
+        rango = leerOpcion(1, 1000);
+
+        if (rango == -1)
+        {
+            puts("Entrada no válida. Debe ingresar un número positivo.");
+            presioneEnterParaContinuar();
+            return;
+        }
+
+        int *rangoPtr = malloc(sizeof(int));
+        if (rangoPtr == NULL)
+        {
+            puts("Error al asignar memoria para el rango.");
+            presioneEnterParaContinuar();
+            return;
+        }
+
+        *rangoPtr = rango;
+
+        list_pushFront(listaCriterio, rangoPtr);
+        printf("Rango de búsqueda de %d chunks agregado correctamente.\n", rango);
+        presioneEnterParaContinuar();
+        return;
+    }
+}
+
+int mostrarOpcionesSeleccion(char* nombreCriterio)
+{
+    if (strcmp(nombreCriterio, "Biomas") == 0) { mostrarBiomasDisponibles(Biomas); return 1;}
+    else if (strcmp(nombreCriterio, "Estructuras") == 0) { mostrarEstructurasDisponibles(Estructuras); return 1;}
+    else if (strcmp(nombreCriterio, "Coordenadas") == 0) { return 0; }
+    else if (strcmp(nombreCriterio, "Rango") == 0) { return 0; }
+
+    else{ return -1; }
+}
+
+void nuevaSeleccion(List* listaCriterio, char* nombreCriterio, int MAX) {
+    
+    limpiarPantalla();
+
+    if (list_size(listaCriterio) >= MAX)
+    {
+        puts("===============================================");   
+        puts("Error: Se ha alcanzado el máximo de selecciones permitidas.");
+        puts("Por favor, elimine una selección antes de agregar una nueva.");
+        presioneEnterParaContinuar();
+        return;
     }
 
+    do
+    {
+        puts("===============================================");
+        printf("Nueva selección de %s\n", nombreCriterio);
+        puts("===============================================");
 
+        int flag;
+        flag = mostrarOpcionesSeleccion(nombreCriterio);
 
-    int opcion; 
+        if (flag == -1) {
+            puts("Error: Criterio de búsqueda no reconocido.");
+            presioneEnterParaContinuar();
+            return;
+        }
+
+        if (flag == 0) {
+            seleccionPorConsola(listaCriterio, nombreCriterio, MAX);
+            return;
+        }
+
+        if (flag == 1){
+
+            int TOTAL;
+            if (strcmp(nombreCriterio, "Biomas") == 0) {TOTAL = TOTAL_BIOMAS;}
+            else if (strcmp(nombreCriterio, "Estructuras") == 0) {TOTAL = TOTAL_ESTRUCTURAS;}
+            
+            printf("Seleccione su opción (1-%d): ", TOTAL);
+            int opcion = leerOpcion(1, TOTAL);
+
+            if (opcion == -1)
+            {
+                printf("\nEntrada no válida. Debe ingresar un número entre 1 y %d.\n", TOTAL);
+                presioneEnterParaContinuar();
+                return;
+            }
+
+            ID *seleccionado;
+            seleccionado = malloc(sizeof(ID));
+            if (seleccionado == NULL)
+            {
+                puts("Error al asignar memoria para la selección.");
+                presioneEnterParaContinuar();
+                return;
+            }
+
+            if (strcmp(nombreCriterio, "Biomas") == 0)
+            {
+                strcpy(seleccionado->nombreEsp, Biomas[opcion - 1].nombreEsp);
+                strcpy(seleccionado->nombreCub, Biomas[opcion - 1].nombreCub);
+            }
+            else if (strcmp(nombreCriterio, "Estructuras") == 0)
+            {
+                strcpy(seleccionado->nombreEsp, Estructuras[opcion - 1].nombreEsp);
+                strcpy(seleccionado->nombreCub, Estructuras[opcion - 1].nombreCub);
+            }
+
+            if (list_exist(listaCriterio, seleccionado, compararID))
+            {
+                puts("Este elemento ya ha sido seleccionado.");
+                presioneEnterParaContinuar();
+                return;
+            }
+
+            list_pushBack(listaCriterio, seleccionado);
+            printf("\n'%s' agregada correctamente a la selección de %s.\n", seleccionado->nombreEsp, nombreCriterio);
+            presioneEnterParaContinuar();
+            return;
+
+        }
+    } while (1);
+}
+
+void menuOpcionesCriterio(char* nombreCriterio) {
+    printf("1. Nueva selección de %s\n", nombreCriterio);
+    printf("2. Mostrar la selección de %s\n", nombreCriterio);
+    printf("3. Eliminar una selección\n");
+    printf("4. Eliminar todas las selecciones\n");
+    printf("5. Volver al menú de selección de criterios\n");
+}
+
+void mostrarSeleccion(List* listaCriterio, char* nombreCriterio, int flag){
+    if (flag == 1) {limpiarPantalla();}
+
+    if (flag == 1){
+        printf("========= Selección de %s =========\n", nombreCriterio);
+    }
+    
+    if (listaCriterio == NULL || list_size(listaCriterio) == 0) {
+        puts("No hay selecciones almacenadas.");
+        if (flag == 1) {presioneEnterParaContinuar();}
+        return;
+    }
+
+    if (strcmp(nombreCriterio, "Biomas") == 0 || strcmp(nombreCriterio, "Estructuras") == 0){
+        ID *seleccion = list_first(listaCriterio);
+        int i = 1;
+        while (seleccion != NULL) {
+            printf("%d. %s (%s)\n", i++, seleccion->nombreEsp, seleccion->nombreCub);
+            seleccion = list_next(listaCriterio);
+        }
+        if (flag == 1) {presioneEnterParaContinuar();}
+        return;
+    }
+    
+    if (strcmp(nombreCriterio, "Coordenadas") == 0) {
+        int *x = list_index(listaCriterio, 0);
+        int *z = list_index(listaCriterio, 1);
+
+        printf("Coordenadas iniciales para la búsqueda:\n");
+        printf("Coordenada X: %d\n", *x);
+        printf("Coordenada Z: %d\n", *z);
+        if (flag == 1) {presioneEnterParaContinuar();}
+        return;
+    }
+    
+    if (strcmp(nombreCriterio, "Rango") == 0) {
+        int *rango = list_first(listaCriterio);
+        printf("Rango de búsqueda: %d chunks\n", *rango);
+        if (flag == 1) {presioneEnterParaContinuar();}
+        return;
+    }
+
+}
+
+void eliminarSeleccion(List* listaCriterio, char* nombreCriterio) {
+    limpiarPantalla();
+    printf("========= Eliminar Una Selección de %s =========\n", nombreCriterio);
+
+    if (listaCriterio == NULL || list_size(listaCriterio) == 0) {
+        puts("No hay selecciones almacenadas para eliminar.");
+        presioneEnterParaContinuar();
+        return;
+    }
+
+    if (strcmp(nombreCriterio, "Biomas") == 0 || strcmp(nombreCriterio, "Estructuras") == 0)
+    {
+        mostrarSeleccion(listaCriterio, nombreCriterio, 0);
+        printf("\nSeleccione el número de la selección que desea eliminar (0 para cancelar): ");
+
+        int opcion = leerOpcion(0, list_size(listaCriterio));
+        if (opcion == 0)
+        {
+            puts("Eliminación cancelada.");
+            presioneEnterParaContinuar();
+            return;
+        }
+
+        if (opcion == -1)
+        {
+            printf("\nEntrada no válida. Debe ingresar un número entre 1 y %d.\n", list_size(listaCriterio));
+            presioneEnterParaContinuar();
+            return;
+        }
+
+        ID *seleccion = list_index(listaCriterio, opcion - 1);
+        list_popCurrent(listaCriterio);
+        printf("Selección '%s' eliminada correctamente.\n", seleccion->nombreEsp);  
+    }
+
+    if (strcmp(nombreCriterio, "Coordenadas") == 0 || strcmp(nombreCriterio, "Rango") == 0) {
+        list_clean(listaCriterio);
+        printf("Selección de %s eliminada correctamente.\n", nombreCriterio);
+        presioneEnterParaContinuar();
+        return;
+    }
+}
+
+void almacenarCriterio(List* listaCriterio, char* nombreCriterio, int MAX){
+    limpiarPantalla();
+    
+    if (listaCriterio == NULL || nombreCriterio == NULL) {
+        puts("===============================================");
+        puts("Error: Criterio de búsqueda o el nombre del criterio son nulos :(");
+        presioneEnterParaContinuar();
+        return;
+    }
+
+    int opcion;
     do
     {
         limpiarPantalla();
-        puts("========= Selección de Biomas a Buscar =========");
-        puts("1. Agregar Bioma");
-        puts("2. Mostrar Biomas Seleccionados");
-        puts("3. Eliminar Bioma");
-        puts("4. Eliminar todos los biomas");
-        puts("5. Volver al menú principal");
-        printf("Seleccione una opción: ");
+        puts("===============================================");
+        printf("Definir criterio de búsqueda: %s\n", nombreCriterio);
+        puts("===============================================");
+
+        menuOpcionesCriterio(nombreCriterio);
+        printf("Seleccione su opción (1-5): ");
         opcion = leerOpcion(1, 5);
 
         switch(opcion)
         {
             case 1:
-                limpiarPantalla();
-                agregarBioma(c, listaBiomas);
+                nuevaSeleccion(listaCriterio, nombreCriterio, MAX);
                 break;
             case 2:
-                limpiarPantalla();
-                mostrarBiomasSeleccionados(c);
+                mostrarSeleccion(listaCriterio, nombreCriterio, 1);
                 break;
             case 3:
-                limpiarPantalla();
-                eliminarBioma(c);
+                eliminarSeleccion(listaCriterio, nombreCriterio);
                 break;
             case 4:
-                limpiarPantalla();
-                eliminarTodosLosBiomas(c);
+                eliminarTodasLasSelecciones(listaCriterio);
                 break;
             case 5:
                 puts("Volviendo al menú principal...");
-                break;
-            default:
-                puts("Opción no válida. Por favor, intente de nuevo.");
                 presioneEnterParaContinuar();
-                break;
+                return;
         }
-    } while(opcion != 5);
-    presioneEnterParaContinuar();
-    return;
+    } while (1);
+
+
 }
 
 
+void resumenCriterios(criterioBusqueda *criterioUsuario) {
+    
+    limpiarPantalla();
+    puts("========= Resumen de Criterios de Búsqueda =========");
+    if (criterioUsuario == NULL)
+    {
+        puts("No se ha definido ningún criterio de búsqueda.");
+        presioneEnterParaContinuar();
+        return;
+    }
 
+    puts("==== Biomas requeridos ====");
+    mostrarSeleccion(criterioUsuario->biomasRequeridos, "Biomas", 0);
+
+    puts("\n==== Estructuras requeridas ====");
+    mostrarSeleccion(criterioUsuario->estructurasRequeridas, "Estructuras", 0);
+
+    puts("\n==== Coordenadas iniciales ====");
+    if (list_size(criterioUsuario->coordenadasIniciales) == 0){
+        puts("Coordenada X = 0");
+        puts("Coordenada Z = 0");
+    }
+    else { mostrarSeleccion(criterioUsuario->coordenadasIniciales, "Coordenadas", 0); }
+
+    puts("\n==== Rango de búsqueda ====");
+    if (list_size(criterioUsuario->radioBusquedaEnChunks) == 0){
+        puts("Rango de búsqueda: 1028 chunks [RANGO POR DEFECTO]");
+    }
+    else { mostrarSeleccion(criterioUsuario->radioBusquedaEnChunks, "Rango", 0); }
+
+    puts("\n===============================================");
+    presioneEnterParaContinuar();
+    return;
+}
 
 void almacenarCriterios(criterioBusqueda *c) {
     // Implementación pendiente.
