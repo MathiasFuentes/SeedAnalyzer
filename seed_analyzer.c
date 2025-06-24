@@ -2,15 +2,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
 #include "extra.h"
 #include "criteria.h"
 #include "cargacriterios.h"
+#include "search.h"
+#include "generator.h"
 
 #define TOTAL_BIOMAS 14
 #define MAX_BIOMAS_USUARIO 3
 #define MAX_ESTRUCTURAS_USUARIO 3
 #define MAX_COORDENADAS_USUARIO 2
 #define MAX_RANGO_USUARIO 1
+
 /*
     LINK CUBIOMES: https://github.com/Cubitect/cubiomes 
 
@@ -27,7 +31,7 @@ void menuPrincipal()
     puts("===== SeedAnalyzer Menu =====");
     puts("1. Crear nuevos criterios de búsqueda");
     puts("2. Cargar criterios existentes");
-    puts("3. Ejecutar análisis con criterios actuales");
+    puts("3. Realizar búsqueda con criterios actuales");
     puts("4. Visualizar Resultados");
     puts("5. Salir del programa");
     puts("=============================");
@@ -50,7 +54,11 @@ void menuOpcion2(){
 }
 
 void menuOpcion3(){
-    puts("OPCION NO IMPLEMENTADA");
+    puts("====== Realizar Búsqueda de la Zona =====");
+    puts("1. Iniciar búsqueda con criterios actuales");
+    puts("2. Modificar semilla de búsqueda");
+    puts("3. Ver resultados de la búsqueda");
+    puts("4. Volver al menú principal");
 }
 
 void menuOpcion4(){
@@ -93,6 +101,36 @@ void ejecutarOpcion1(criterioBusqueda *c){
     }   while (opcion != 6);
 }
 
+void ejecutarOpcion3(criterioBusqueda *c){
+    int opcion; 
+    Generator *gen;
+    setupGenerator(gen, MC_1_16, 0);
+    uint64_t *seed;
+    (*seed) = 0;
+
+    do {
+        limpiarPantalla();
+        menuOpcion3();
+        printf("\nSeleccione una opción: "); opcion = leerOpcion(1, 4);
+        switch(opcion)
+        {
+            case 1:
+                realizarBusqueda(c, gen, seed);
+                break;
+            case 2:
+                modificarSemilla(seed);
+                break;
+            case 3:
+                puts("Mostrando resultados...");
+                break;
+            case 4:
+                puts("Volviendo al menú principal...");
+                break;
+            default:
+                puts("Opción no válida.");
+        }
+    } while (opcion != 4);
+}
 
 int main(){
 
@@ -115,7 +153,7 @@ int main(){
                 puts("Cargando criterios existentes...");
                 break;
             case 3:
-                menuOpcion3();
+                ejecutarOpcion3(criterioUsuario);
                 break;
             case 4:
                 menuOpcion4();
