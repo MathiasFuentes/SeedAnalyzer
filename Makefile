@@ -4,7 +4,11 @@ CFLAGS = -Iinclude -Wall -lm
 
 # Archivos fuente
 SRC = seed_analyzer.c \
-      criteria.c \
+	src/search.c \
+      src/criteria.c \
+	src/heap.c \
+      src/map.c \
+      src/kd_tree.c \
       src/list.c \
       src/extra.c \
       src/cJSON.c \
