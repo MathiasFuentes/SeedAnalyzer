@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "criteria.h": "c"
-    }
+        "criteria.h": "c",
+        "compare": "c",
+        "search.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
