@@ -1,5 +1,5 @@
-#ifndef CARGA_CRITERIOS_H
-#define CARGA_CRITERIOS_H
+#ifndef CARGACRITERIOS_H
+#define CARGACRITERIOS_H
 
 #include "criteria.h"
 
