@@ -21,6 +21,7 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 -Calcula y selecciona la región más óptima en base a distancia al punto inicial.
 
 -Genera un archivo con los resultados y permite visualización 3D.
+<<<<<<< HEAD
 ---
 
 ##  Cómo compilar y ejecutar
@@ -60,3 +61,7 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 
 ---
 
+=======
+
+---
+>>>>>>> ecbc0535ab0b97dc684e8a6199ca5905597c366f
