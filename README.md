@@ -40,14 +40,15 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 -Para la visualización 3D, necesitas Python con matplotlib instalado.
 
 ---
-
----
 ### Pasos para compilar y ejecutar:
 
 - Descarga y descomprime el archivo en una carpeta de tu elección.
+  
 - Abre el proyecto en Visual Studio Code
+  
 - Inicia Visual Studio Code.
     Selecciona **Archivo > Abrir carpeta...** y elige la carpeta donde descomprimiste el proyecto.
+  
 - Compila el código
     Abre el archivo principal (**seed_analyzer.c**).
     Abre la terminal integrada (**Terminal > Nueva terminal**).
