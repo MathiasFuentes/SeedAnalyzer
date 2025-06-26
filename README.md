@@ -50,7 +50,7 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
     Selecciona **Archivo > Abrir carpeta...** y elige la carpeta donde descomprimiste el proyecto.
   
 - Compila el código
-    Abre el archivo principal (**seed_analyzer.c**).
+    Abre el archivo principal ( **seed_analyzer.c** ).
     Abre la terminal integrada (**Terminal > Nueva terminal**).
     En la terminal, compila el programa con el siguiente comando:
         ```
