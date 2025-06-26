@@ -22,3 +22,41 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 
 -Genera un archivo con los resultados y permite visualización 3D.
 ---
+
+##  Cómo compilar y ejecutar
+
+---
+### Requisitos previos:
+
+-Tener instalado [Visual Studio Code](https://code.visualstudio.com/)..
+
+-Instalar la extensión **C/C++** (Microsoft).
+
+-Tener instalda la extencion Makefile (para que al momento de compilar sea mas corto).
+
+-Tener instalada la librería Cubiomes (ver instrucciones en su repositorio oficial).
+
+-Para la visualización 3D, necesitas Python con matplotlib instalado.
+---
+---
+### Pasos para compilar y ejecutar:
+
+- Descarga y descomprime el archivo en una carpeta de tu elección.
+- Abre el proyecto en Visual Studio Code
+- Inicia Visual Studio Code.
+    Selecciona **Archivo > Abrir carpeta...** y elige la carpeta donde descomprimiste el proyecto.
+- Compila el código
+    Abre el archivo principal (**seed_analyzer.c**).
+    Abre la terminal integrada (**Terminal > Nueva terminal**).
+    En la terminal, compila el programa con el siguiente comando:
+        ```
+        mingw32-make
+        ```
+- Ejecuta el programa
+    Una vez compilado, puedes ejecutar la aplicación con:
+        ```
+        ./seed_analyzer
+        ```
+
+---
+
