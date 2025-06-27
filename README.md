@@ -136,7 +136,7 @@ Seleccione una opción: 1
   ```
 ## Interacciones
 
-## 1. Definir biomas deseados
+### 1. Definir biomas deseados
 
 - El sistema solicita al usuario ingresar hasta 3 biomas.
 
@@ -149,7 +149,7 @@ Seleccione una opción: 1
     ```
      "plains", "mountains", "cherry_grove".
     ```
-## 2. Definir estructuras deseadas
+### 2. Definir estructuras deseadas
 
 - Similar al anterior, permite seleccionar hasta 3 estructuras.
 
@@ -162,7 +162,7 @@ Seleccione una opción: 1
     ```
      "village", "stronghold", "ruined_portal".
     ```
-## 3. Definir coordenadas específicas
+### 3. Definir coordenadas específicas
 
 - Solicita al usuario ingresar dos coordenadas (X, Z) iniciales.
 
@@ -172,7 +172,7 @@ Seleccione una opción: 1
     ```
 - Estas se usan como punto de referencia para medir distancias.
 
-## 4. Definir rango de búsqueda
+### 4. Definir rango de búsqueda
 
  - Se pide un único valor entero, que representa el radio en chunks.
 
@@ -186,7 +186,7 @@ Seleccione una opción: 1
     ```
       chunks.
 
-## 5. Resumen de criterios seleccionados
+### 5. Resumen de criterios seleccionados
 
 Imprime en pantalla un resumen con todos los valores actuales:
 
@@ -198,7 +198,7 @@ Imprime en pantalla un resumen con todos los valores actuales:
 
 - Radio
 
-## 6. Volver al menú principal
+### 6. Volver al menú principal
 
  - Sale del submenú y retorna al menú principal.
    
