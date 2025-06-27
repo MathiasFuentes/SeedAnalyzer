@@ -134,7 +134,7 @@ Seed Analyzer está diseñado sobre una arquitectura modular en C que aprovecha:
  6. Volver al menú principal
  ===================================
   ```
-
+---
 ## Interacciones Case 1:
 
 ### 1. Definir biomas deseados
@@ -202,7 +202,8 @@ Imprime en pantalla un resumen con todos los valores actuales:
 ### 6. Volver al menú principal
 
  - Sale del submenú y retorna al menú principal.
-
+   
+  ---
 
 
 
