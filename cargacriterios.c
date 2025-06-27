@@ -79,6 +79,7 @@ int leerCriterioDesdeArchivo(criterioBusqueda *c, const char *ruta) {
     return 1;
 }
 
+/*
 void menuCargarCriterios(criterioBusqueda *c) {
     DIR *dir;
     struct dirent *ent;
@@ -124,6 +125,7 @@ void menuCargarCriterios(criterioBusqueda *c) {
 
     presioneEnterParaContinuar();
 }
+*/
 
 int cargarCriteriosDesdeJSON(criterioBusqueda *c, const char *nombreArchivo) {
     FILE *file = fopen(nombreArchivo, "r");
