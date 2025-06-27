@@ -123,4 +123,32 @@ Luego se te guiará paso a paso por submenús para ingresar tus criterios.
 
 ---
 
+## Contribuciones
+
+  Matías Fuentes
+
+  - Desarrolló la arquitectura base del codigo.
+    
+  - Coordinó la integración con Cubiomes.
+
+  - Implementó funciones claves.
+
+  Néstor Calderón
+
+  - Redactó gran parte del README.
+
+  - Mantuvo la coherencia y el flujo general del código.
+
+  - Verifico la experiencia del usuario en consola.
+
+  Bastián Guerra
+
+  - Lógica de búsqueda inicial y estructuras auxiliares.
+
+  - Mejoró la experiencia en consola y la presentación del menú.
+
+  - Desarrolló validaciones y flujos de entrada del usuario.
+
+---
+
 
