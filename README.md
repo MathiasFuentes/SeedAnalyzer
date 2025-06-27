@@ -92,6 +92,7 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
     ```
     plot.py.
     ```
+    
 ---
 ## Diseño del sistema y estructura de datos
 
@@ -107,18 +108,19 @@ s
 
 ---
 ## Ejemplo de uso
-     ```
-    ===== SeedAnalyzer Menu =====
- 1. Crear nuevos criterios de búsqueda
- 2. Cargar criterios existentes
- 3. Realizar búsqueda con criterios actuales
- 4. Visualizar Resultados
- 5. Salir del programa
- =============================
+     ``````
+        ===== SeedAnalyzer Menu =====
+     1. Crear nuevos criterios de búsqueda
+     2. Cargar criterios existentes
+     3. Realizar búsqueda con criterios actuales
+     4. Visualizar Resultados
+     5. Salir del programa
+        =============================
 
-Seleccione una opción: 1
-  ```
+      Seleccione una opción: 1
+    ``````
 Luego se te guiará paso a paso por submenús para ingresar tus criterios.
 
 ---
+
 
