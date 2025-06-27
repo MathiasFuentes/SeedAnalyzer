@@ -203,7 +203,7 @@ Imprime en pantalla un resumen con todos los valores actuales:
 
  - Sale del submenú y retorna al menú principal.
    
-  ---
+---
 
 
 
@@ -275,12 +275,12 @@ Imprime en pantalla un resumen con todos los valores actuales:
 
 
 
- ---
+---
  ## Interacciones Case 6:
 
 - Sale del programa.
   
-  ---
+---
   
 ---
 
