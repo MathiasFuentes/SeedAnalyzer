@@ -16,11 +16,9 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 
 -Utiliza la librería Cubiomes para simular la generación de mundo como lo haría Minecraft.
 
--Tambien realiza la búsqueda usando pthreads para aprovechar múltiples núcleos del procesador.
-
 -Calcula y selecciona la región más óptima en base a distancia al punto inicial.
 
--Genera un archivo con los resultados y permite visualización 3D.
+-Genera un archivo con los resultados y permite su visualización.
 
 ---
 
