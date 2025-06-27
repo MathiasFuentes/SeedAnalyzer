@@ -111,7 +111,6 @@ Seed Analyzer está diseñado sobre una arquitectura modular en C que aprovecha:
 # Ejemplo de uso
 
 ---
-
  ## Menú Principal.
  
   ```
@@ -123,6 +122,8 @@ Seed Analyzer está diseñado sobre una arquitectura modular en C que aprovecha:
  5. Salir del programa
  =============================
   ```
+
+---
   ## Submenús y sus interacciones en cada opcion
 
   ### Submenú case 1: 
@@ -137,6 +138,7 @@ Seed Analyzer está diseñado sobre una arquitectura modular en C que aprovecha:
  ===================================
   ```
 ---
+
 ## Interacciones Case 1:
 
 ### 1. Definir biomas deseados
@@ -218,7 +220,7 @@ Imprime en pantalla un resumen con todos los valores actuales:
  3. Ver resultados de la búsqueda
  4. Volver al menú principal
   ```
-
+---
 ## Interaciones Case 3:
 
 ### 1. Iniciar búsqueda con criterios actuales
