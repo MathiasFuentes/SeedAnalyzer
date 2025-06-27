@@ -6,6 +6,8 @@
 #include "criteria.h"
 #include "cargacriterios.h"
 #include "extra.h"
+#include "cJSON.h"
+#include "list.h"
 
 #define CRITERIA_DIR "./criteria/"
 #define MAX_ARCHIVOS 100
@@ -121,4 +123,77 @@ void menuCargarCriterios(criterioBusqueda *c) {
     }
 
     presioneEnterParaContinuar();
+}
+
+int cargarCriteriosDesdeJSON(criterioBusqueda *c, const char *nombreArchivo) {
+    FILE *file = fopen(nombreArchivo, "r");
+    if (!file) return 0;
+
+    fseek(file, 0, SEEK_END);
+    long length = ftell(file);
+    rewind(file);
+
+    char *contenido = malloc(length + 1);
+    fread(contenido, 1, length, file);
+    contenido[length] = '\0';
+    fclose(file);
+
+    cJSON *json = cJSON_Parse(contenido);
+    free(contenido);
+
+    if (!json) {
+        printf("Error al parsear el archivo JSON\n");
+        return 0;
+    }
+
+    // Limpiar listas anteriores
+    list_clean(c->biomasRequeridos);
+    list_clean(c->estructurasRequeridas);
+    list_clean(c->coordenadasIniciales);
+    list_clean(c->radioBusquedaEnChunks);
+
+    // Biomas
+    cJSON *biomas = cJSON_GetObjectItemCaseSensitive(json, "biomas");
+    if (cJSON_IsArray(biomas)) {
+        cJSON *bioma = NULL;
+        cJSON_ArrayForEach(bioma, biomas) {
+            if (cJSON_IsString(bioma)) {
+                char *biomaStr = strdup(bioma->valuestring);
+                list_pushBack(c->biomasRequeridos, biomaStr);
+            }
+        }
+    }
+
+    // Estructuras
+    cJSON *estructuras = cJSON_GetObjectItemCaseSensitive(json, "estructuras");
+    if (cJSON_IsArray(estructuras)) {
+        cJSON *estructura = NULL;
+        cJSON_ArrayForEach(estructura, estructuras) {
+            if (cJSON_IsString(estructura)) {
+                char *estructuraStr = strdup(estructura->valuestring);
+                list_pushBack(c->estructurasRequeridas, estructuraStr);
+            }
+        }
+    }
+
+    // Coordenadas
+    cJSON *coordenadas = cJSON_GetObjectItemCaseSensitive(json, "coordenadas");
+    if (cJSON_IsArray(coordenadas) && cJSON_GetArraySize(coordenadas) == 2) {
+        for (int i = 0; i < 2; i++) {
+            int *valor = malloc(sizeof(int));
+            *valor = cJSON_GetArrayItem(coordenadas, i)->valueint;
+            list_pushBack(c->coordenadasIniciales, valor);
+        }
+    }
+
+    // Radio
+    cJSON *radio = cJSON_GetObjectItemCaseSensitive(json, "radio");
+    if (cJSON_IsNumber(radio)) {
+        int *valor = malloc(sizeof(int));
+        *valor = radio->valueint;
+        list_pushBack(c->radioBusquedaEnChunks, valor);
+    }
+
+    cJSON_Delete(json);
+    return 1;
 }
