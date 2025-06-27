@@ -6,6 +6,7 @@
 #include "extra.h"
 #include "criteria.h"
 #include "cargacriterios.h"
+#include "cargacriterios.c"
 #include "search.h"
 #include "generator.h"
 
@@ -50,7 +51,11 @@ void menuOpcion1()
 }
 
 void menuOpcion2(){
-    puts("OPCION NO IMPLEMENTADA");
+    puts("====== Cargar Criterios Existentes ======");
+    puts("Se encontraron los siguientes archivos .json:");
+    puts("1. criteria_montaña.json");
+    puts("2. criteria_oceano.json");
+    puts("3. criteria_village_bioma.json");
 }
 
 void menuOpcion3(){
@@ -101,7 +106,50 @@ void ejecutarOpcion1(criterioBusqueda *c){
     }   while (opcion != 6);
 }
 
-void ejecutarOpcion3(criterioBusqueda *c){
+void ejecutarOpcion2(criterioBusqueda *c) {
+    int opcion;
+    char *archivos[] = {
+        "criteria_montaña.json",
+        "criteria_oceano.json",
+        "criteria_village_bioma.json"
+    };
+    int cantidadArchivos = 3;
+
+    do {
+        limpiarPantalla();
+        menuOpcion2();
+
+        for (int i = 0; i < cantidadArchivos; i++) {
+            printf("%d. %s\n", i + 1, archivos[i]);
+        }
+        puts("Volver al menu principal");
+        puts("========================================");
+
+        printf("\nSeleccione el numero del archivo que desea cargar: ");
+        opcion = leerOpcion(0, cantidadArchivos);
+
+        if (opcion == 0) {
+            puts("Volviendo al menu principal...");
+            break;
+        }
+
+        char *archivoSeleccionado = archivos[opcion - 1];
+        printf("\nCargando archivo: %s\n", archivoSeleccionado);
+
+        if (cargarCriteriosDesdeJSON(c, archivoSeleccionado)) {
+            puts("Criterios cargados exitosamente.");
+            resumenCriterios(c);
+        } else {
+            puts("Error al cargar los criterios. Verifique el archivo.");
+        }
+
+        presioneEnterParaContinuar();
+
+    } while (opcion != 0);
+}
+
+
+/*void ejecutarOpcion3(criterioBusqueda *c){
     int opcion; 
     Generator *gen;
     setupGenerator(gen, MC_1_16, 0);
@@ -130,7 +178,7 @@ void ejecutarOpcion3(criterioBusqueda *c){
                 puts("Opción no válida.");
         }
     } while (opcion != 4);
-}
+}*/
 
 int main(){
 
@@ -149,7 +197,7 @@ int main(){
                 ejecutarOpcion1(criterioUsuario);
                 break;
             case 2:
-                menuCargarCriterios(criterioUsuario);
+                ejecutarOpcion2(criterioUsuario);
                 puts("Cargando criterios existentes...");
                 break;
             case 3:
