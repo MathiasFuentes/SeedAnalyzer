@@ -10,9 +10,9 @@
 #include "search.h"
 #include "generator.h"
 
-#define TOTAL_BIOMAS 14
-#define MAX_BIOMAS_USUARIO 3
-#define MAX_ESTRUCTURAS_USUARIO 3
+#define TOTAL_BIOMAS 10
+#define MAX_BIOMAS_USUARIO 2
+#define MAX_ESTRUCTURAS_USUARIO 2
 #define MAX_COORDENADAS_USUARIO 2
 #define MAX_RANGO_USUARIO 1
 
@@ -149,13 +149,8 @@ void ejecutarOpcion2(criterioBusqueda *c) {
 }
 
 
-/*void ejecutarOpcion3(criterioBusqueda *c){
+void ejecutarOpcion3(criterioBusqueda *c){
     int opcion; 
-    Generator *gen;
-    setupGenerator(gen, MC_1_16, 0);
-    uint64_t *seed;
-    (*seed) = 0;
-
     do {
         limpiarPantalla();
         menuOpcion3();
@@ -163,10 +158,11 @@ void ejecutarOpcion2(criterioBusqueda *c) {
         switch(opcion)
         {
             case 1:
-                realizarBusqueda(c, gen, seed);
+                run_search_pipeline(-5874984598433733493, c);
+                //realizarBusqueda(c, gen, seed);
                 break;
             case 2:
-                modificarSemilla(seed);
+                //modificarSemilla(seed);
                 break;
             case 3:
                 puts("Mostrando resultados...");
@@ -178,7 +174,7 @@ void ejecutarOpcion2(criterioBusqueda *c) {
                 puts("Opción no válida.");
         }
     } while (opcion != 4);
-}*/
+}
 
 int main(){
 
