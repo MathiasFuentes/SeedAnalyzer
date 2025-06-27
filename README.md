@@ -75,7 +75,7 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 
  - Rango en chunks
 
- - Guardado de criterios en archivo JSON 
+ - Guardado de criterios en archivo JSON: 
     ```
      criteria.json.
     ```
