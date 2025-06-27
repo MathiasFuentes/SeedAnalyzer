@@ -16,11 +16,9 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 
 -Utiliza la librería Cubiomes para simular la generación de mundo como lo haría Minecraft.
 
--Tambien realiza la búsqueda usando pthreads para aprovechar múltiples núcleos del procesador.
-
 -Calcula y selecciona la región más óptima en base a distancia al punto inicial.
 
--Genera un archivo con los resultados y permite visualización 3D.
+-Genera un archivo con los resultados y permite su visualización.
 
 ---
 
@@ -40,23 +38,24 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 -Para la visualización 3D, necesitas Python con matplotlib instalado.
 
 ---
-
----
 ### Pasos para compilar y ejecutar:
 
 - Descarga y descomprime el archivo en una carpeta de tu elección.
+  
 - Abre el proyecto en Visual Studio Code
+  
 - Inicia Visual Studio Code.
     Selecciona **Archivo > Abrir carpeta...** y elige la carpeta donde descomprimiste el proyecto.
+  
 - Compila el código
-    Abre el archivo principal (**seed_analyzer.c**).
+    Abre el archivo principal ( **seed_analyzer.c** ).
     Abre la terminal integrada (**Terminal > Nueva terminal**).
     En la terminal, compila el programa con el siguiente comando:
         ```
         mingw32-make
         ```
-- Ejecuta el programa
-    Una vez compilado, puedes ejecutar la aplicación con:
+- Ejecuta el programa,
+    una vez compilado, puedes ejecutar con:
         ```
         ./seed_analyzer
         ```
@@ -101,7 +100,7 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
  -Tablas Hash para mapear nombres legibles a códigos internos de Cubiomes.
 
  -Montículo mínimo (Heap) para ordenar regiones candidatas por distancia.
-
+s
  -Árbol KD (KD-Tree) para búsquedas espaciales rápidas.
 
  -Cache LRU para evitar recomputar regiones superpuestas.
