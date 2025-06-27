@@ -128,8 +128,8 @@ Seleccione una opción: 1
  5. Resumen de criterios seleccionados
  6. Volver al menú principal
  ===================================
-
   ```
+
 ## 1. Definir biomas deseados
 
 - El sistema solicita al usuario ingresar hasta 3 biomas.
@@ -137,13 +137,11 @@ Seleccione una opción: 1
 - Se almacenan en una lista dinámica 
     ```
      List *biomasRequeridos.
-
     ```
 
 - Ejemplos válidos: 
     ```
      "plains", "mountains", "cherry_grove".
-
     ```
 ## 2. Definir estructuras deseadas
 
@@ -152,13 +150,11 @@ Seleccione una opción: 1
 - Se almacenan en 
     ```
      List *estructurasRequeridas.
-
     ```
 
 - Ejemplos: 
     ```
      "village", "stronghold", "ruined_portal".
-
     ```
 ## 3. Definir coordenadas específicas
 
@@ -167,7 +163,6 @@ Seleccione una opción: 1
 - Se almacenan en 
     ```
      List *coordenadasIniciales.
-
     ```
 - Estas se usan como punto de referencia para medir distancias.
 
@@ -178,12 +173,10 @@ Seleccione una opción: 1
  - Se guarda en 
     ```
      List *radioBusquedaEnChunks.
-
     ```
  - El área total de escaneo será de tamaño: 
     ```
      N = 2 * radio + 1 
-
     ```
       chunks.
 
@@ -199,5 +192,9 @@ Imprime en pantalla un resumen con todos los valores actuales:
 
 - Radio
 
+## 6. Volver al menú principal
+
+ - Sale del submenú y retorna al menú principal.
+ - 
 ---
 
