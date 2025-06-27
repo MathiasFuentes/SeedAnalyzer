@@ -1,19 +1,23 @@
 #ifndef CRITERIA_H
 #define CRITERIA_H
 
+#define TOTAL_BIOMAS 10
+#define TOTAL_ESTRUCTURAS 7
+
+typedef struct { char nombreEsp[32]; char nombreCub[32]; } ID;
+
+extern ID Biomas[TOTAL_BIOMAS];
+extern ID Estructuras[TOTAL_ESTRUCTURAS];
+
 #include "list.h"
 
 typedef struct{
-    List* radioBusquedaEnChunks;
+    List *radioBusquedaEnChunks;
     List *coordenadasIniciales;
     List *biomasRequeridos;
     List *estructurasRequeridas;
 } criterioBusqueda;
 
-typedef struct ID{
-    char nombreEsp[64];
-    char nombreCub[64];
-} ID;
 
 criterioBusqueda* setDefaultCriterio();
 

@@ -5,20 +5,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_BIOMAS_USUARIO 3
-#define MAX_ESTRUCTURAS_USUARIO 3
+#define MAX_BIOMAS_USUARIO 2
+#define MAX_ESTRUCTURAS_USUARIO 2
 #define MAX_COORDENADAS_USUARIO 2
 #define MAX_RANGO_USUARIO 1
 
-#define TOTAL_BIOMAS 14
-#define TOTAL_ESTRUCTURAS 9
+#define TOTAL_BIOMAS 10
+#define TOTAL_ESTRUCTURAS 7
 
 /* 
     Lista de los principales biomas de Minecraft con sus nombres en español y en inglés.
 */
 
 ID Biomas[TOTAL_BIOMAS] = {
-    {"Campos de hongos", "mushroom_fields"},
     {"Pradera", "plains"},
     {"Bosque", "forest"},
     {"Bosque de abedules", "birch_forest"},
@@ -28,10 +27,7 @@ ID Biomas[TOTAL_BIOMAS] = {
     {"Sabana", "savanna"},
     {"Pantano", "swamp"},
     {"Océano", "ocean"},
-    {"Océano cálido", "warm_ocean"},
-    {"Océano congelado", "frozen_ocean"},
     {"Bosque oscuro", "dark_forest"},
-    {"Colinas de piedra", "stone_shore"}
 };
 
 ID Estructuras[TOTAL_ESTRUCTURAS] = {
@@ -40,9 +36,7 @@ ID Estructuras[TOTAL_ESTRUCTURAS] = {
     {"Templo de la jungla", "jungle_pyramid"},
     {"Poste de saqueadores", "pillager_outpost"},
     {"Monumento oceánico", "ocean_monument"},
-    {"Fortaleza (Stronghold)", "stronghold"},
     {"Resto de portal", "ruined_portal"},
-    {"Tesoro enterrado", "buried_treasure"},
     {"Mina Abandonada", "Mineshaft"}
 };
 
