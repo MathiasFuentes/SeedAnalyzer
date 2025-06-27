@@ -12,6 +12,8 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <limits.h>
+
 #define WINDOW_SIZE 64
 #define MAX_DISPLAY 5
 #define MIN_SEPARATION 16.0
