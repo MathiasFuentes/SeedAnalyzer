@@ -1,4 +1,4 @@
-## SEED ANALYZER
+# SEED ANALYZER
 
 ---
 ## ¡Explora mundos en Minecraft, de una forma optima y divertida!
@@ -22,7 +22,7 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 
 ---
 
-##  Cómo compilar y ejecutar
+#  Cómo compilar y ejecutar
 
 ---
 ### Requisitos previos:
@@ -61,7 +61,7 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
         ```
 
 ---
-## Funcionalidades principales
+# Funcionalidades principales
 
  - Menú principal con submenús funcionales.
 
@@ -93,7 +93,7 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
      plot.py.
     ```
 ---
-## Diseño del sistema y estructura de datos
+# Diseño del sistema y estructura de datos
 
 Seed Analyzer está diseñado sobre una arquitectura modular en C que aprovecha:
 
@@ -201,8 +201,9 @@ Imprime en pantalla un resumen con todos los valores actuales:
 ### 6. Volver al menú principal
 
  - Sale del submenú y retorna al menú principal.
- - 
-### Case 6:
+
+   
+ ### Case 6:
 
 - Sale del programa.
    
