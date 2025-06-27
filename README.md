@@ -212,7 +212,7 @@ Imprime en pantalla un resumen con todos los valores actuales:
  4. Volver al menú principal
   ```
 
-## Inetarciones Case 3:
+## Interaciones Case 3:
 
 ### 1. Iniciar búsqueda con criterios actuales
 
