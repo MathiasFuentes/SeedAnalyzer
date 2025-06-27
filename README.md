@@ -127,7 +127,7 @@ Seleccione una opción: 1
  4. Definir rango de búsqueda
  5. Resumen de criterios seleccionados
  6. Volver al menú principal
-  ===================================
+ ===================================
   ```
 ## 1. Definir biomas deseados
 
