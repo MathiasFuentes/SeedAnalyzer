@@ -2,14 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <limits.h>
 
 #include "extra.h"
 #include "criteria.h"
 #include "cargacriterios.h"
 #include "cargacriterios.c"
 #include "search.h"
+#include "search_cli.h"
 #include "generator.h"
+
 
 #define TOTAL_BIOMAS 10
 #define MAX_BIOMAS_USUARIO 2
@@ -95,7 +96,7 @@ void ejecutarOpcion1(criterioBusqueda *c){
                 almacenarCriterio(c->radioBusquedaEnChunks, "Rango", MAX_RANGO_USUARIO);
                 break;
             case 5:
-                resumenCriterios(c);
+                resumenCriterios(c, 1);
                 break;
             case 6:
                 puts("Volviendo al menú principal...");
@@ -139,7 +140,7 @@ void ejecutarOpcion2(criterioBusqueda *c) {
 
         if (cargarCriteriosDesdeJSON(c, archivoSeleccionado)) {
             puts("Criterios cargados exitosamente.");
-            resumenCriterios(c);
+            resumenCriterios(c, 1);
         } else {
             puts("Error al cargar los criterios. Verifique el archivo.");
         }
@@ -151,7 +152,14 @@ void ejecutarOpcion2(criterioBusqueda *c) {
 
 
 void ejecutarOpcion3(criterioBusqueda *c){
-    int opcion; 
+    
+    int opcion;
+    uint64_t seed_value = 0;
+    uint64_t *pseed = &seed_value;
+
+    RegionResult *lastResults = NULL;
+    int lastCount = 0;
+
     do {
         limpiarPantalla();
         menuOpcion3();
@@ -159,14 +167,18 @@ void ejecutarOpcion3(criterioBusqueda *c){
         switch(opcion)
         {
             case 1:
-                run_search_pipeline(-5874984598433733493, c);
-                //realizarBusqueda(c, gen, seed);
+                if (lastResults) {
+                    free(lastResults);
+                    lastResults = NULL;
+                    lastCount = 0;
+                }
+                realizarBusqueda(c, pseed, &lastResults, &lastCount);
                 break;
             case 2:
-                //modificarSemilla(seed);
+                modificarSemilla(pseed);
                 break;
-            case 3:
-                puts("Mostrando resultados...");
+            case 3: 
+                //mostrarResultados();
                 break;
             case 4:
                 puts("Volviendo al menú principal...");
@@ -178,7 +190,6 @@ void ejecutarOpcion3(criterioBusqueda *c){
 }
 
 int main(){
-
     criterioBusqueda *criterioUsuario = setDefaultCriterio();
     int opcion;
 
@@ -195,7 +206,6 @@ int main(){
                 break;
             case 2:
                 ejecutarOpcion2(criterioUsuario);
-                puts("Cargando criterios existentes...");
                 break;
             case 3:
                 ejecutarOpcion3(criterioUsuario);

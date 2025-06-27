@@ -6,18 +6,40 @@
 #include "finders.h"
 #include "list.h"
 #include "quadbase.h"
+#include "extra.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "extra.h"
-#define WINDOW_SIZE 128
+
+
+#define WINDOW_SIZE 64
 #define MAX_DISPLAY 5
 #define MIN_SEPARATION 16.0
 
-static int struct_name_to_type(const char *name);
+static int cmpRegion(const void *a, const void *b) {
+    double da = ((const RegionResult*)a)->distance;
+    double db = ((const RegionResult*)b)->distance;
+    return (da < db) ? -1 : (da > db);
+}
+
+int biome_name_to_id(const char *name) {
+    if (strcmp(name, "plains") == 0)        return plains;
+    if (strcmp(name, "forest") == 0)        return forest;
+    if (strcmp(name, "birch_forest") == 0)  return birch_forest;
+    if (strcmp(name, "desert") == 0)        return desert;
+    if (strcmp(name, "taiga") == 0)         return taiga;
+    if (strcmp(name, "jungle") == 0)        return jungle;
+    if (strcmp(name, "savanna") == 0)       return savanna;
+    if (strcmp(name, "swamp") == 0)         return swamp;
+    if (strcmp(name, "ocean") == 0)         return ocean;
+    if (strcmp(name, "dark_forest") == 0)   return dark_forest;
+    // Si más biomas se agregan a Biomas[], mapea aquí...
+    return -1;
+}
 
 static int struct_name_to_type(const char *name) {
     if (strcmp(name, "village") == 0)           return Village;
@@ -30,13 +52,8 @@ static int struct_name_to_type(const char *name) {
     if (strcmp(name, "buried_treasure") == 0)   return Treasure;
     if (strcmp(name, "Mineshaft") == 0)         return Mineshaft;
     // Si más estructuras se agregan al catálogo, mapea aquí...
+    
     return -1;
-}
-
-static int cmpRegion(const void *a, const void *b) {
-    double da = ((RegionResult*)a)->distance;
-    double db = ((RegionResult*)b)->distance;
-    return (da < db) ? -1 : (da > db);
 }
 
 // Helper: count bits in a mask
@@ -286,6 +303,16 @@ int search_create(const SearchParams *p, SearchContext **outCtx) {
     ctx->numBiomes = count_bits(p->biomeMask);
     ctx->biomeIds  = malloc(sizeof(int) * ctx->numBiomes);
     fill_ids(p->biomeMask, ctx->biomeIds, ctx->numBiomes);
+    for (int k = 0; k < ctx->numBiomes; ++k) {
+        int catalogIdx = ctx->biomeIds[k];               // índice en Biomas[]
+        int realId     = biome_name_to_id(Biomas[catalogIdx].nombreCub);
+        if (realId < 0) {
+            fprintf(stderr,
+                    "Error: bioma desconocido '%s'\n",
+                    Biomas[catalogIdx].nombreCub);
+        }
+        ctx->biomeIds[k] = realId;                       // ahora contiene el ID real
+    }
 
     // 2) Decode structureMask → structIds[] (catalog indices)
     ctx->numStructures = count_bits(p->structureMask);
@@ -398,6 +425,7 @@ static bool block_has_structures(SearchContext *ctx,
     return true;
 }
 
+/*
 void run_search_pipeline(uint64_t seed, criterioBusqueda *crit) {
     // 1) Leer criterios de usuario
     int radius = list_size(crit->radioBusquedaEnChunks)
@@ -547,4 +575,168 @@ void run_search_pipeline(uint64_t seed, criterioBusqueda *crit) {
     free(results);
     search_destroy(ctx);
     free(gen);
+}
+*/
+
+int run_search_pipeline(uint64_t seed,
+                        criterioBusqueda *crit,
+                        RegionResult **outResults,
+                        int *outCount)
+{
+    if (!crit || !outResults || !outCount) return -1;
+
+    // 1) Leer criterios de usuario
+    int radius = list_size(crit->radioBusquedaEnChunks)
+               ? *(int*)list_index(crit->radioBusquedaEnChunks, 0)
+               : 1028;
+    int centerX = list_size(crit->coordenadasIniciales)
+               ? ((int*)list_index(crit->coordenadasIniciales, 0))[0]
+               : 0;
+    int centerZ = list_size(crit->coordenadasIniciales)
+               ? ((int*)list_index(crit->coordenadasIniciales, 0))[1]
+               : 0;
+
+    // 2) Inicializar Generator
+    Generator *gen = malloc(sizeof(*gen));
+    if (!gen) return -1;
+    setupGenerator(gen, MC_1_16, 0);
+    applySeed(gen, DIM_OVERWORLD, seed);
+
+    // 3) Crear contexto
+    SearchContext *ctx = NULL;
+    if (search_create_from_criterio(
+            crit, gen, seed,
+            MC_1_16, DIM_OVERWORLD,
+            WINDOW_SIZE, 1,
+            &ctx) != 0)
+    {
+        free(gen);
+        return -1;
+    }
+
+    // 4) Seleccionar estructura pivote
+    int s_min = 0, minCount = INT_MAX;
+    for (int s = 0; s < ctx->numStructures; ++s) {
+        StructureConfig sc;
+        getStructureConfig(ctx->structIds[s],
+                           ctx->params.mcVersion,
+                           &sc);
+        int regSize = sc.regionSize;
+        int minRX = (centerX - radius) / regSize;
+        int maxRX = (centerX + radius) / regSize;
+        int minRZ = (centerZ - radius) / regSize;
+        int maxRZ = (centerZ + radius) / regSize;
+        int cnt = 0;
+        for (int rx = minRX; rx <= maxRX; ++rx) {
+            for (int rz = minRZ; rz <= maxRZ; ++rz) {
+                Pos p;
+                if (!getStructurePos(ctx->structIds[s],
+                                     ctx->params.mcVersion,
+                                     seed, rx, rz, &p))
+                    continue;
+                if (isViableStructurePos(ctx->structIds[s],
+                                         gen, p.x, p.z,
+                                         ctx->params.dim))
+                    cnt++;
+            }
+        }
+        if (cnt < minCount) {
+            minCount = cnt;
+            s_min = s;
+        }
+    }
+
+    // 5) Enumerar candidatos del pivote
+    StructureConfig sc_min;
+    getStructureConfig(ctx->structIds[s_min],
+                       ctx->params.mcVersion,
+                       &sc_min);
+    int regSize = sc_min.regionSize;
+    int minRX = (centerX - radius) / regSize;
+    int maxRX = (centerX + radius) / regSize;
+    int minRZ = (centerZ - radius) / regSize;
+    int maxRZ = (centerZ + radius) / regSize;
+
+    Pos *cands = malloc(sizeof(Pos) * ((maxRX-minRX+1)*(maxRZ-minRZ+1)));
+    if (!cands) { search_destroy(ctx); free(gen); return -1; }
+    int nCands = 0;
+    for (int rx = minRX; rx <= maxRX; ++rx) {
+        for (int rz = minRZ; rz <= maxRZ; ++rz) {
+            Pos p;
+            if (!getStructurePos(ctx->structIds[s_min],
+                                 ctx->params.mcVersion,
+                                 seed, rx, rz, &p))
+                continue;
+            int cx = p.x >> 4;
+            int cz = p.z >> 4;
+            double d = hypot(cx - centerX, cz - centerZ);
+            if (d > radius) continue;
+            if (isViableStructurePos(ctx->structIds[s_min],
+                                     gen, p.x, p.z,
+                                     ctx->params.dim)) {
+                cands[nCands++] = (Pos){ cx, cz };
+            }
+        }
+    }
+
+    // 6) Probar bloques y recolectar resultados
+    RegionResult *results = malloc(sizeof(RegionResult) * nCands);
+    if (!results) { free(cands); search_destroy(ctx); free(gen); return -1; }
+    int foundCount = 0;
+    int half = WINDOW_SIZE / 2;
+    int N = ctx->params.totalSize;
+    int baseX = centerX - N/2;
+    int baseZ = centerZ - N/2;
+
+    for (int i = 0; i < nCands; ++i) {
+        int cx = cands[i].x, cz = cands[i].z;
+        int cornerX = cx - half, cornerZ = cz - half;
+        if (cornerX < baseX) cornerX = baseX;
+        if (cornerZ < baseZ) cornerZ = baseZ;
+        if (cornerX + WINDOW_SIZE > baseX + N)
+            cornerX = baseX + N - WINDOW_SIZE;
+        if (cornerZ + WINDOW_SIZE > baseZ + N)
+            cornerZ = baseZ + N - WINDOW_SIZE;
+
+        if (!block_has_biomes(gen, cornerX, cornerZ,
+                              ctx->biomeIds, ctx->numBiomes))
+            continue;
+        if (!block_has_structures(ctx, cornerX, cornerZ, s_min))
+            continue;
+
+        double dist = hypot(cornerX + half - centerX,
+                            cornerZ + half - centerZ);
+        results[foundCount++] = (RegionResult){
+            .x0       = cornerX,
+            .z0       = cornerZ,
+            .distance = dist
+        };
+    }
+
+    // 7) Ordenar y filtrar separación mínima
+    qsort(results, foundCount, sizeof(RegionResult), cmpRegion);
+    RegionResult *filtered = malloc(sizeof(RegionResult) * foundCount);
+    int fcount = 0;
+    for (int i = 0; i < foundCount; ++i) {
+        int xi = results[i].x0, zi = results[i].z0;
+        bool keep = true;
+        for (int j = 0; j < fcount; ++j) {
+            double dx = xi - filtered[j].x0;
+            double dz = zi - filtered[j].z0;
+            if (sqrt(dx*dx + dz*dz) < MIN_SEPARATION) {
+                keep = false;
+                break;
+            }
+        }
+        if (keep) filtered[fcount++] = results[i];
+    }
+    free(results);
+    free(cands);
+    search_destroy(ctx);
+    free(gen);
+
+    // 8) Devolver
+    *outResults = filtered;
+    *outCount   = fcount;
+    return 0;
 }

@@ -164,14 +164,14 @@ void seleccionPorConsola(List* listaCriterio, char* nombreCriterio, int MAX) {
         
         int rango;
         puts("Advertencias: El rango se mide en chunks (regiones de 16 x 16 bloques).");
-        puts("              El rango debe ser menor a 10.000 (Diez Mil).");
+        puts("              El rango debe ser menor a 1028 Chunks.");
 
         printf("\nIngrese el rango de búsqueda en chunks: ");
-        rango = leerOpcion(1, 10000);
+        rango = leerOpcion(1, 1028);
 
         if (rango == -1)
         {
-            puts("Entrada no válida. Debe ingresar un número positivo.");
+            puts("Entrada no válida. Intente de nuevo.");
             presioneEnterParaContinuar();
             return;
         }
@@ -434,7 +434,7 @@ void almacenarCriterio(List* listaCriterio, char* nombreCriterio, int MAX){
 }
 
 
-void resumenCriterios(criterioBusqueda *criterioUsuario) {
+void resumenCriterios(criterioBusqueda *criterioUsuario, int flag) {
     
     limpiarPantalla();
     puts("========= Resumen de Criterios de Búsqueda =========");
@@ -464,8 +464,8 @@ void resumenCriterios(criterioBusqueda *criterioUsuario) {
     }
     else { mostrarSeleccion(criterioUsuario->radioBusquedaEnChunks, "Rango", 0); }
 
-    puts("\n===============================================");
-    presioneEnterParaContinuar();
+    if (flag == 1) {puts("\n===============================================");}
+    if (flag == 1) {presioneEnterParaContinuar();}
     return;
 }
 

@@ -43,6 +43,6 @@ void nuevaSeleccion(List* listaCriterio, char* nombreCriterio, int MAX);
 
 void seleccionPorConsola(List* listaCriterio, char* nombreCriterio, int MAX);
 
-void resumenCriterios(criterioBusqueda *c);
+void resumenCriterios(criterioBusqueda *c, int flag);
 
 #endif

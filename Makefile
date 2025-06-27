@@ -5,6 +5,7 @@ CFLAGS = -Iinclude -Wall -lm
 # Archivos fuente
 SRC = seed_analyzer.c \
 	src/search.c \
+      src/search_cli.c \
       src/criteria.c \
 	src/heap.c \
       src/map.c \

@@ -49,6 +49,9 @@ int   search_run   (SearchContext    *ctx,
                     RegionResult   **outResults,
                     int             *outCount);
 void  search_destroy(SearchContext    *ctx);
-void run_search_pipeline(uint64_t seed, criterioBusqueda *crit);
+int run_search_pipeline(uint64_t seed,
+                        criterioBusqueda *crit,
+                        RegionResult **outResults,
+                        int *outCount);
 
 #endif /* SEARCH_H */
