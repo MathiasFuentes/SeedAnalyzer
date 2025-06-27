@@ -195,6 +195,6 @@ Imprime en pantalla un resumen con todos los valores actuales:
 ## 6. Volver al menú principal
 
  - Sale del submenú y retorna al menú principal.
- - 
+   
 ---
 
