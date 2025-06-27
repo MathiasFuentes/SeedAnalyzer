@@ -6,31 +6,39 @@
 #include "criteria.h"
 #include "cargacriterios.h"
 #include "extra.h"
+#include "cJSON.h"
+#include "list.h"
 
 #define CRITERIA_DIR "./criteria/"
 #define MAX_ARCHIVOS 100
 
-void splitYAgregarBiomas(criterioBusqueda *c, const char *str) {
+void splitYAgregarALista(List *lista, const char *str, const char *tipo) {
     char copia[512];
     strcpy(copia, str);
     char *token = strtok(copia, ",");
-    c->numBiomas = 0;
-    while (token != NULL && c->numBiomas < MAX_BIOMAS) {
-        strcpy(c->biomas[c->numBiomas], token);
-        c->numBiomas++;
+    while (token != NULL) {
+        if (strcmp(tipo, "bioma") == 0 || strcmp(tipo, "estructura") == 0) {
+            ID *nuevo = malloc(sizeof(ID));
+            if (nuevo) {
+                strcpy(nuevo->nombreCub, token);
+                strcpy(nuevo->nombreEsp, token); // si quieres solo en inglés
+                list_pushBack(lista, nuevo);
+            }
+        }
         token = strtok(NULL, ",");
     }
 }
 
-
-void splitYAgregarEstructuras(criterioBusqueda *c, const char *str) {
+void splitYAgregarCoordenadas(List *lista, const char *str) {
     char copia[512];
     strcpy(copia, str);
     char *token = strtok(copia, ",");
-    c->numEstructuras = 0;
-    while (token != NULL && c->numEstructuras < MAX_ESTRUCTURAS) {
-        strcpy(c->estructuras[c->numEstructuras], token);
-        c->numEstructuras++;
+    while (token != NULL) {
+        int *valor = malloc(sizeof(int));
+        if (valor) {
+            *valor = atoi(token);
+            list_pushBack(lista, valor);
+        }
         token = strtok(NULL, ",");
     }
 }
@@ -42,16 +50,28 @@ int leerCriterioDesdeArchivo(criterioBusqueda *c, const char *ruta) {
         return 0;
     }
 
+    // Limpiar listas actuales
+    list_clean(c->biomasRequeridos);
+    list_clean(c->estructurasRequeridas);
+    list_clean(c->coordenadasIniciales);
+    list_clean(c->radioBusquedaEnChunks);
+
     char linea[512];
     while (fgets(linea, sizeof(linea), fp)) {
         linea[strcspn(linea, "\n")] = 0;
 
         if (strncmp(linea, "biomas=", 7) == 0) {
-            splitYAgregarBiomas(c, linea + 7);
+            splitYAgregarALista(c->biomasRequeridos, linea + 7, "bioma");
         } else if (strncmp(linea, "estructuras=", 12) == 0) {
-            splitYAgregarEstructuras(c, linea + 12);
+            splitYAgregarALista(c->estructurasRequeridas, linea + 12, "estructura");
+        } else if (strncmp(linea, "coordenadas=", 12) == 0) {
+            splitYAgregarCoordenadas(c->coordenadasIniciales, linea + 12);
         } else if (strncmp(linea, "rango=", 6) == 0) {
-            c->rango = atoi(linea + 6);
+            int *rango = malloc(sizeof(int));
+            if (rango) {
+                *rango = atoi(linea + 6);
+                list_pushBack(c->radioBusquedaEnChunks, rango);
+            }
         }
     }
 
@@ -83,6 +103,7 @@ void menuCargarCriterios(criterioBusqueda *c) {
 
     if (total == 0) {
         printf("No hay archivos de criterios guardados.\n");
+        presioneEnterParaContinuar();
         return;
     }
 
@@ -100,4 +121,79 @@ void menuCargarCriterios(criterioBusqueda *c) {
     } else {
         printf("Error al cargar el archivo.\n");
     }
+
+    presioneEnterParaContinuar();
+}
+
+int cargarCriteriosDesdeJSON(criterioBusqueda *c, const char *nombreArchivo) {
+    FILE *file = fopen(nombreArchivo, "r");
+    if (!file) return 0;
+
+    fseek(file, 0, SEEK_END);
+    long length = ftell(file);
+    rewind(file);
+
+    char *contenido = malloc(length + 1);
+    fread(contenido, 1, length, file);
+    contenido[length] = '\0';
+    fclose(file);
+
+    cJSON *json = cJSON_Parse(contenido);
+    free(contenido);
+
+    if (!json) {
+        printf("Error al parsear el archivo JSON\n");
+        return 0;
+    }
+
+    // Limpiar listas anteriores
+    list_clean(c->biomasRequeridos);
+    list_clean(c->estructurasRequeridas);
+    list_clean(c->coordenadasIniciales);
+    list_clean(c->radioBusquedaEnChunks);
+
+    // Biomas
+    cJSON *biomas = cJSON_GetObjectItemCaseSensitive(json, "biomas");
+    if (cJSON_IsArray(biomas)) {
+        cJSON *bioma = NULL;
+        cJSON_ArrayForEach(bioma, biomas) {
+            if (cJSON_IsString(bioma)) {
+                char *biomaStr = strdup(bioma->valuestring);
+                list_pushBack(c->biomasRequeridos, biomaStr);
+            }
+        }
+    }
+
+    // Estructuras
+    cJSON *estructuras = cJSON_GetObjectItemCaseSensitive(json, "estructuras");
+    if (cJSON_IsArray(estructuras)) {
+        cJSON *estructura = NULL;
+        cJSON_ArrayForEach(estructura, estructuras) {
+            if (cJSON_IsString(estructura)) {
+                char *estructuraStr = strdup(estructura->valuestring);
+                list_pushBack(c->estructurasRequeridas, estructuraStr);
+            }
+        }
+    }
+
+    // Coordenadas
+    cJSON *coordenadas = cJSON_GetObjectItemCaseSensitive(json, "coordenadas");
+    if (cJSON_IsArray(coordenadas) && cJSON_GetArraySize(coordenadas) == 2) {
+        for (int i = 0; i < 2; i++) {
+            int *valor = malloc(sizeof(int));
+            *valor = cJSON_GetArrayItem(coordenadas, i)->valueint;
+            list_pushBack(c->coordenadasIniciales, valor);
+        }
+    }
+
+    // Radio
+    cJSON *radio = cJSON_GetObjectItemCaseSensitive(json, "radio");
+    if (cJSON_IsNumber(radio)) {
+        int *valor = malloc(sizeof(int));
+        *valor = radio->valueint;
+        list_pushBack(c->radioBusquedaEnChunks, valor);
+    }
+
+    cJSON_Delete(json);
+    return 1;
 }
