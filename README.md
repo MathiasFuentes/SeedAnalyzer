@@ -62,4 +62,64 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
         ```
 
 ---
+## Funcionalidades principales
+
+ -Menú principal con submenús funcionales.
+
+ -Creación de criterios de búsqueda:
+
+ -Biomas deseados
+
+ -Estructuras deseadas
+
+ -Coordenadas iniciales
+
+ -Rango en chunks
+
+ -Guardado de criterios en archivo JSON 
+    ```
+    criteria.json.
+    ```
+
+ -Visualización de resumen de criterios seleccionados.
+
+ -Carga de criterios desde archivo JSON.
+
+ -Ejecución real del análisis con Cubiomes.
+
+ -Ranking de zonas candidatas y selección óptima.
+
+ -Visualización 3D del resultado con 
+    ```
+    plot.py.
+    ```
+---
+## Diseño del sistema y estructura de datos
+
+ -Listas enlazadas para almacenar dinámicamente biomas, estructuras y coordenadas.
+
+ -Tablas Hash para mapear nombres legibles a códigos internos de Cubiomes.
+
+ -Montículo mínimo (Heap) para ordenar regiones candidatas por distancia.
+
+ -Árbol KD (KD-Tree) para búsquedas espaciales rápidas.
+
+ -Cache LRU para evitar recomputar regiones superpuestas.
+
+---
+## Ejemplo de uso
+     ```
+    ===== SeedAnalyzer Menu =====
+ 1. Crear nuevos criterios de búsqueda
+ 2. Cargar criterios existentes
+ 3. Realizar búsqueda con criterios actuales
+ 4. Visualizar Resultados
+ 5. Salir del programa
+ =============================
+
+Seleccione una opción: 1
+  ```
+Luego se te guiará paso a paso por submenús para ingresar tus criterios.
+
+---
 
