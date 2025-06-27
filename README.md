@@ -279,6 +279,7 @@ Imprime en pantalla un resumen con todos los valores actuales:
  ## Interacciones Case 6:
 
 - Sale del programa.
+  
   ---
   
 ---
