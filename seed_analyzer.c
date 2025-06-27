@@ -49,7 +49,6 @@ void menuOpcion1()
     puts("4. Definir rango de búsqueda");
     puts("5. Resumen de criterios seleccionados");
     puts("6. Volver al menú principal");
-    puts("===================================");
 }
 
 void menuOpcion2(){
@@ -69,7 +68,10 @@ void menuOpcion3(){
 }
 
 void menuOpcion4(){
-    puts("OPCION NO IMPLEMENTADA");
+    puts("====== Visualización de Zonas Candidatas =====");
+    puts("1. Visualización 2D con Cubiomes");
+    puts("2. Visualización 3D");
+    puts("3. Volver al menú principal");
 }
 
 // Funciones interactivas del programa
@@ -150,8 +152,7 @@ void ejecutarOpcion2(criterioBusqueda *c) {
     } while (opcion != 0);
 }
 
-
-void ejecutarOpcion3(criterioBusqueda *c){
+void ejecutarOpcion3(criterioBusqueda *c, KDTree *arbolito){
     
     int opcion;
     uint64_t seed_value = 0;
@@ -159,8 +160,6 @@ void ejecutarOpcion3(criterioBusqueda *c){
 
     RegionResult *lastResults = NULL;
     int lastCount = 0;
-
-    KDTree *arbolito = kd_create(2);
     
     do {
         limpiarPantalla();
@@ -192,9 +191,37 @@ void ejecutarOpcion3(criterioBusqueda *c){
     } while (opcion != 4);
 }
 
+void ejecutarOpcion4(criterioBusqueda *c, KDTree *arbolito){
+    
+    int opcion;
+
+    do {
+        limpiarPantalla();
+        menuOpcion4();
+        printf("\nSeleccione una opción: "); opcion = leerOpcion(1, 4);
+        switch(opcion)
+        {
+            case 1:
+                //visualizar2D();
+                break;
+            case 2:
+                // Visualizar 3d
+                break;
+            case 3: 
+                puts("Volviendo al menú principal");
+                presioneEnterParaContinuar();
+                return;
+            default:
+                puts("Opción no válida.");
+                presioneEnterParaContinuar();
+        }
+    } while (opcion != 3);
+}
+
 int main(){
     criterioBusqueda *criterioUsuario = setDefaultCriterio();
     int opcion;
+    KDTree *arbolito = kd_create(2);
 
     do
     {
@@ -211,10 +238,10 @@ int main(){
                 ejecutarOpcion2(criterioUsuario);
                 break;
             case 3:
-                ejecutarOpcion3(criterioUsuario);
+                ejecutarOpcion3(criterioUsuario, arbolito);
                 break;
             case 4:
-                menuOpcion4();
+                ejecutarOpcion4(criterioUsuario, arbolito);
                 break;
             case 5:
                 puts("Saliendo del programa...");

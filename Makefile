@@ -7,6 +7,7 @@ SRC = seed_analyzer.c \
 	src/search.c \
       src/search_cli.c \
       src/criteria.c \
+      src/visualizer.c \
 	src/heap.c \
       src/map.c \
       src/kd_tree.c \

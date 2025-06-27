@@ -14,7 +14,8 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
-
+#include <inttypes.h>
+#include <limits.h>
 
 #define WINDOW_SIZE 64
 #define MAX_DISPLAY 5
