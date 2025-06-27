@@ -57,7 +57,6 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 - Ejecuta el programa,
     una vez compilado, puedes ejecutar con:
         ```
-  
         ./seed_analyzer
         ```
 
@@ -76,9 +75,9 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 
  - Rango en chunks
 
- - Guardado de criterios en archivo JSON: 
+ - Guardado de criterios en archivo JSON 
       ```
-      criteria.json.
+      criteria.json
       ```
 
  - Visualización de resumen de criterios seleccionados.
