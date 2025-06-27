@@ -12,9 +12,8 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <limits.h>
-
-#define WINDOW_SIZE 64
+#include "extra.h"
+#define WINDOW_SIZE 128
 #define MAX_DISPLAY 5
 #define MIN_SEPARATION 16.0
 
@@ -542,7 +541,7 @@ void run_search_pipeline(uint64_t seed, criterioBusqueda *crit) {
                results[i].z0,
                results[i].distance);
     }
-
+    presioneEnterParaContinuar();
     // 9) Liberar memoria
     free(cands);
     free(results);
