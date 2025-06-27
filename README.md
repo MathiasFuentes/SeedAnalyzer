@@ -10,15 +10,15 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 ---
 ## ¿Qué hace Seed Analyzer?
 
--Te guía paso a paso con un menú interactivo.
+- Te guía paso a paso con un menú interactivo.
 
--Permite seleccionar biomas, estructuras, coordenadas y rangos de búsqueda.
+- Permite seleccionar biomas, estructuras, coordenadas y rangos de búsqueda.
 
--Utiliza la librería Cubiomes para simular la generación de mundo como lo haría Minecraft.
+- Utiliza la librería Cubiomes para simular la generación de mundo como lo haría Minecraft.
 
--Calcula y selecciona la región más óptima en base a distancia al punto inicial.
+- Calcula y selecciona la región más óptima en base a distancia al punto inicial.
 
--Genera un archivo con los resultados y permite su visualización.
+- Genera un archivo con los resultados y permite su visualización.
 
 ---
 
@@ -27,15 +27,15 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 ---
 ### Requisitos previos:
 
--Tener instalado [Visual Studio Code](https://code.visualstudio.com/)..
+- Tener instalado [Visual Studio Code](https://code.visualstudio.com/)..
 
--Instalar la extensión **C/C++** (Microsoft).
+- Instalar la extensión **C/C++** (Microsoft).
 
--Tener instalda la extencion Makefile (para que al momento de compilar sea mas corto).
+- Tener instalda la extencion Makefile (para que al momento de compilar sea mas corto).
 
--Tener instalada la librería Cubiomes (ver instrucciones en su repositorio oficial).
+- Tener instalada la librería Cubiomes (ver instrucciones en su repositorio oficial).
 
--Para la visualización 3D, necesitas Python con matplotlib instalado.
+- Para la visualización 3D, necesitas Python con matplotlib instalado.
 
 ---
 ### Pasos para compilar y ejecutar:
