@@ -134,7 +134,7 @@ Seleccione una opción: 1
  6. Volver al menú principal
  ===================================
   ```
-## Interacciones case 1:
+## Interacciones Case 1:
 
 ### 1. Definir biomas deseados
 
@@ -202,7 +202,40 @@ Imprime en pantalla un resumen con todos los valores actuales:
 
  - Sale del submenú y retorna al menú principal.
 
+  ### submenú case 3: 
+  ```
+  ====== Realizar Búsqueda de la Zona =====
+ 1. Iniciar búsqueda con criterios actuales
+ 2. Modificar semilla de búsqueda
+ 3. Ver resultados de la búsqueda
+ 4. Volver al menú principal
+  ```
 
+## Inetarciones Case 3:
+
+### 1. Iniciar búsqueda con criterios actuales
+
+- Ejecuta la función
+    ```
+    realizarBusqueda(c, gen, seed).
+    ```
+ - Toma los criterios definidos (biomas, estructuras, coordenadas, radio).
+
+ - Utiliza la librería Cubiomes para simular la generación del mundo.
+
+ - Divide el área de chunks en subregiones y evalúa cuáles cumplen los criterios.
+
+ - Usa pthreads para paralelizar el proceso.
+
+ - Guarda las zonas candidatas y selecciona la más cercana al punto inicial.
+
+ - Resultados se guardan en un archivo como
+      ```
+      results.json.
+      ```
+
+
+  
 
 
 
