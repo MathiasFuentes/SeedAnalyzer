@@ -122,7 +122,7 @@ Seed Analyzer está diseñado sobre una arquitectura modular en C que aprovecha:
  =============================
   ```
 
-  ### submenú case 1: 
+  ### Submenú case 1: 
   ```
     ===== Crear Nuevos Criterios =====
  1. Definir biomas deseados
@@ -203,7 +203,7 @@ Imprime en pantalla un resumen con todos los valores actuales:
  - Sale del submenú y retorna al menú principal.
 
 
-  ### submenú case 3: 
+  ### Submenú case 3: 
   ```
   ====== Realizar Búsqueda de la Zona =====
  1. Iniciar búsqueda con criterios actuales
@@ -234,6 +234,34 @@ Imprime en pantalla un resumen con todos los valores actuales:
       ```
       results.json.
       ```
+### 2. Modificar semilla de búsqueda
+
+ - Permite ingresar una nueva semilla numérica
+     ```
+     uint64_t.
+     ```
+
+ - Esta semilla se pasa a
+     ```
+     setupGenerator()
+     ```
+    y afecta toda la simulación.
+
+ - Asegura reproducibilidad: si usas la misma seed, obtendrás el mismo mundo.
+
+### 3. Ver resultados de la búsqueda
+
+ - Muestra por consola:
+
+  - Coordenadas de la mejor región encontrada.
+
+  - Biomas y estructuras detectados.
+
+  - Distancia al punto inicial.
+
+### 4. Volver al menú principal
+
+ - Sale del submenú y retorna al menú principal.
 
 
   
