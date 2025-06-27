@@ -110,6 +110,8 @@ Seed Analyzer está diseñado sobre una arquitectura modular en C que aprovecha:
 ---
 # Ejemplo de uso
 
+---
+
  ## Menú Principal.
  
   ```
