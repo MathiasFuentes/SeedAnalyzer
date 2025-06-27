@@ -63,92 +63,140 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 ---
 ## Funcionalidades principales
 
- -Menú principal con submenús funcionales.
+ - Menú principal con submenús funcionales.
 
- -Creación de criterios de búsqueda:
+ - Creación de criterios de búsqueda:
 
- -Biomas deseados
+ - Biomas deseados
 
- -Estructuras deseadas
+ - Estructuras deseadas
 
- -Coordenadas iniciales
+ - Coordenadas iniciales
 
- -Rango en chunks
+ - Rango en chunks
 
- -Guardado de criterios en archivo JSON 
+ - Guardado de criterios en archivo JSON 
     ```
     criteria.json.
     ```
 
- -Visualización de resumen de criterios seleccionados.
+ - Visualización de resumen de criterios seleccionados.
 
- -Carga de criterios desde archivo JSON.
+ - Carga de criterios desde archivo JSON.
 
- -Ejecución real del análisis con Cubiomes.
+ - Ejecución real del análisis con Cubiomes.
 
- -Ranking de zonas candidatas y selección óptima.
+ - Ranking de zonas candidatas y selección óptima.
 
- -Visualización 3D del resultado con 
+ - Visualización 3D del resultado con 
     ```
     plot.py.
     ```
-    
 ---
 ## Diseño del sistema y estructura de datos
 
- -Listas enlazadas para almacenar dinámicamente biomas, estructuras y coordenadas.
+Seed Analyzer está diseñado sobre una arquitectura modular en C que aprovecha:
 
- -Tablas Hash para mapear nombres legibles a códigos internos de Cubiomes.
+ - Listas enlazadas para almacenar dinámicamente biomas, estructuras y coordenadas.
 
- -Montículo mínimo (Heap) para ordenar regiones candidatas por distancia.
-s
- -Árbol KD (KD-Tree) para búsquedas espaciales rápidas.
+ - Tablas Hash para mapear nombres legibles a códigos internos de Cubiomes.
 
- -Cache LRU para evitar recomputar regiones superpuestas.
+ - Montículo mínimo (Heap) para ordenar regiones candidatas por distancia.
+
+ - Árbol KD (KD-Tree) para búsquedas espaciales rápidas.
+
+ - Cache LRU para evitar recomputar regiones superpuestas.
 
 ---
 ## Ejemplo de uso
-     ``````
-        ===== SeedAnalyzer Menu =====
-     1. Crear nuevos criterios de búsqueda
-     2. Cargar criterios existentes
-     3. Realizar búsqueda con criterios actuales
-     4. Visualizar Resultados
-     5. Salir del programa
-        =============================
+     ```
+    ===== SeedAnalyzer Menu =====
+ 1. Crear nuevos criterios de búsqueda
+ 2. Cargar criterios existentes
+ 3. Realizar búsqueda con criterios actuales
+ 4. Visualizar Resultados
+ 5. Salir del programa
+ =============================
 
-      Seleccione una opción: 1
-    ``````
-Luego se te guiará paso a paso por submenús para ingresar tus criterios.
+Seleccione una opción: 1
+
+    ===== Crear Nuevos Criterios =====
+ 1. Definir biomas deseados
+ 2. Definir estructuras deseadas
+ 3. Definir coordenadas específicas
+ 4. Definir rango de búsqueda
+ 5. Resumen de criterios seleccionados
+ 6. Volver al menú principal
+  ===================================
+  ```
+## 1. Definir biomas deseados
+
+- El sistema solicita al usuario ingresar hasta 3 biomas.
+
+- Se almacenan en una lista dinámica 
+    ```
+    List *biomasRequeridos.
+
+    ```
+
+- Ejemplos válidos: 
+    ```
+    "plains", "mountains", "cherry_grove".
+
+    ```
+## 2. Definir estructuras deseadas
+
+- Similar al anterior, permite seleccionar hasta 3 estructuras.
+
+- Se almacenan en 
+    ```
+    List *estructurasRequeridas.
+
+    ```
+
+- Ejemplos: 
+    ```
+    "village", "stronghold", "ruined_portal".
+
+    ```
+## 3. Definir coordenadas específicas
+
+- Solicita al usuario ingresar dos coordenadas (X, Z) iniciales.
+
+- Se almacenan en 
+    ```
+    List *coordenadasIniciales.
+
+    ```
+- Estas se usan como punto de referencia para medir distancias.
+
+## 4. Definir rango de búsqueda
+
+ - Se pide un único valor entero, que representa el radio en chunks.
+
+ - Se guarda en 
+    ```
+    List *radioBusquedaEnChunks.
+
+    ```
+ - El área total de escaneo será de tamaño: 
+    ```
+    N = 2 * radio + 1 
+
+    ```
+        chunks.
+
+## 5. Resumen de criterios seleccionados
+
+Imprime en pantalla un resumen con todos los valores actuales:
+
+- Biomas ingresados
+
+- Estructuras seleccionadas
+
+- Coordenadas
+
+- Radio
 
 ---
-
-## Contribuciones
-
-  Matías Fuentes
-
-  - Desarrolló la arquitectura base del codigo.
-    
-  - Coordinó la integración con Cubiomes.
-
-  - Implementó funciones claves.
-
-  Néstor Calderón
-
-  - Redactó gran parte del README.
-
-  - Mantuvo la coherencia y el flujo general del código.
-
-  - Verifico la experiencia del usuario en consola.
-
-  Bastián Guerra
-
-  - Lógica de búsqueda inicial y estructuras auxiliares.
-
-  - Mejoró la experiencia en consola y la presentación del menú.
-
-  - Desarrolló validaciones y flujos de entrada del usuario.
-
----
-
 
