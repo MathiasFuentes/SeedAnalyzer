@@ -126,7 +126,7 @@ Seed Analyzer está diseñado sobre una arquitectura modular en C que aprovecha:
 ---
   ## Submenús y sus interacciones en cada opcion
 
-  ### Submenú case 1: 
+  ### Case 1: 
   ```
     ===== Crear Nuevos Criterios =====
  1. Definir biomas deseados
@@ -212,7 +212,7 @@ Imprime en pantalla un resumen con todos los valores actuales:
 
 
 
-  ### Submenú case 3: 
+  ### Case 3: 
   ```
   ====== Realizar Búsqueda de la Zona =====
  1. Iniciar búsqueda con criterios actuales
