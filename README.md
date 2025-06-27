@@ -57,6 +57,7 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 - Ejecuta el programa,
     una vez compilado, puedes ejecutar con:
         ```
+  
         ./seed_analyzer
         ```
 
