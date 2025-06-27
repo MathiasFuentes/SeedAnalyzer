@@ -108,9 +108,9 @@ Seed Analyzer está diseñado sobre una arquitectura modular en C que aprovecha:
  - Cache LRU para evitar recomputar regiones superpuestas.
 
 ---
-## Ejemplo de uso
+# Ejemplo de uso
 
- ### Menú Principal.
+ ## Menú Principal.
  
   ```
     ===== SeedAnalyzer Menu =====
@@ -201,6 +201,10 @@ Imprime en pantalla un resumen con todos los valores actuales:
 ### 6. Volver al menú principal
 
  - Sale del submenú y retorna al menú principal.
+ - 
+### Case 6:
+
+- Sale del programa.
    
 ---
 
