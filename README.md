@@ -109,6 +109,9 @@ Seed Analyzer está diseñado sobre una arquitectura modular en C que aprovecha:
 
 ---
 ## Ejemplo de uso
+
+ ### Menú Principal
+ 
   ```
     ===== SeedAnalyzer Menu =====
  1. Crear nuevos criterios de búsqueda
