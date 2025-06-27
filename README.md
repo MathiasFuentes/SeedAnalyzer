@@ -55,7 +55,7 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
         mingw32-make
         ```
 - Ejecuta el programa
-    Una vez compilado, puedes ejecutar la aplicación con:
+    Una vez compilado, puedes ejecutar con:
         ```
         ./seed_analyzer
         ```
