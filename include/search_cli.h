@@ -3,6 +3,7 @@
 
 #include "criteria.h"
 #include "search.h"
+#include "kd_tree.h"
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -16,6 +17,12 @@ int realizarBusqueda(criterioBusqueda *c,
 uint64_t generate_random_seed(void);
 
 void modificarSemilla(uint64_t *pseed);
+
+void mostrarResultados(const criterioBusqueda *c,
+                       uint64_t seed,
+                       const RegionResult *arr,
+                       int count,
+                       KDTree *tree);
 
 
 #endif

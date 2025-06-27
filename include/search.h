@@ -6,6 +6,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+int biome_name_to_id(const char *name);
+int struct_name_to_type(const char *name);
+
 // Parámetros de usuario para la búsqueda
 typedef struct {
     Generator  *gen;           // Generador ya inicializado

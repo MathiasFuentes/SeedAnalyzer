@@ -10,7 +10,7 @@
 #include "search.h"
 #include "search_cli.h"
 #include "generator.h"
-
+#include "kd_tree.h"
 
 #define TOTAL_BIOMAS 10
 #define MAX_BIOMAS_USUARIO 2
@@ -160,6 +160,8 @@ void ejecutarOpcion3(criterioBusqueda *c){
     RegionResult *lastResults = NULL;
     int lastCount = 0;
 
+    KDTree *arbolito = kd_create(2);
+    
     do {
         limpiarPantalla();
         menuOpcion3();
@@ -178,13 +180,14 @@ void ejecutarOpcion3(criterioBusqueda *c){
                 modificarSemilla(pseed);
                 break;
             case 3: 
-                //mostrarResultados();
+                mostrarResultados(c, seed_value, lastResults, lastCount, arbolito);
                 break;
             case 4:
                 puts("Volviendo al menú principal...");
                 break;
             default:
                 puts("Opción no válida.");
+                presioneEnterParaContinuar();
         }
     } while (opcion != 4);
 }

@@ -41,7 +41,7 @@ int biome_name_to_id(const char *name) {
     return -1;
 }
 
-static int struct_name_to_type(const char *name) {
+int struct_name_to_type(const char *name) {
     if (strcmp(name, "village") == 0)           return Village;
     if (strcmp(name, "desert_pyramid") == 0)    return Desert_Pyramid;
     if (strcmp(name, "jungle_pyramid") == 0)    return Jungle_Pyramid;
