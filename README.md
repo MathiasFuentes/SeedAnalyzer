@@ -288,14 +288,9 @@ Todo esto se escribe en formato JSON legible y reutilizable.
 
  - Divide el área de chunks en subregiones y evalúa cuáles cumplen los criterios.
 
- - Usa pthreads para paralelizar el proceso.
-
  - Guarda las zonas candidatas y selecciona la más cercana al punto inicial.
 
- - Resultados se guardan en un archivo como
-      ```
-      results.json.
-      ```
+ - Resultados se guardan en un arreglo que después sirve para ordenar las zonas candidatas por puntaje.
 ### 2. Modificar semilla de búsqueda
 
  - Permite ingresar una nueva semilla numérica
@@ -317,27 +312,98 @@ Todo esto se escribe en formato JSON legible y reutilizable.
 
   - Coordenadas de la mejor región encontrada.
 
-  - Biomas y estructuras detectados.
-
   - Distancia al punto inicial.
 
 ### 4. Volver al menú principal
 
  - Sale del submenú y retorna al menú principal.
+ - La última búsqueda sigue vigente para su visualización.
+
+---
+## Interacciones Case 4
+
+La función ejecutarOpcion4 abre el submenú de visualización, que permite al usuario generar una vista gráfica de la zona encontrada en la búsqueda:
+```
+void ejecutarOpcion4(criterioBusqueda *c,
+                     KDTree *arbolito,
+                     uint64_t *pseed,
+                     RegionResult *lastResults,
+                     int lastCount)
+{
+    int opcion;
+
+    do {
+        limpiarPantalla();
+        menuOpcion4();
+        printf("\nSeleccione una opción: ");
+        opcion = leerOpcion(1, 4);
+        switch(opcion)
+        {
+            case 1:
+                // Lanza el visualizador 2D de Cubiomes
+                visualizer2d(c, *pseed, lastResults, lastCount);
+                break;
+            case 2:
+                // (Reservado para futura visualización 3D)
+                puts("Volviendo al menú principal");
+                return;
+            default:
+                puts("Opción no válida.");
+                presioneEnterParaContinuar();
+        }
+    } while (opcion != 2);
+}
+```
+
+## ¿Qué hace esta sección del programa?
+
+### 1. Mostrar el submenú
+Despeja la pantalla y presenta las opciones:
+
+- Visualización 2D con Cubiomes
+
+- Regresar al menú principal
 
 
-  
+### Opción 1: Visualizer2d
+Invoca la función de visualización 2D, pasándole:
 
+- El struct de criterios (c), para saber dónde está el punto de inicio y qué biomas/estructuras marcar.
 
+- La semilla del mundo (*pseed).
 
+- El array de resultados de la búsqueda (lastResults) y su tamaño (lastCount).
+
+### El visualizador:
+
+- Genera un mapa PPM (usando Cubiomes) de la región seleccionada con un pequeño margen.
+
+- Pinta cada chunk con su color de bioma oficial.
+
+- Dibuja una cruz azul en la posición inicial del usuario, cruces rojas en cada criterio cumplido y otra en la zona central.
+
+- Guarda el resultado en zona_seleccionada.ppm y lo notifica al usuario.
+
+- Para su visualización, simplemente se ejecuta el script de python visor.py.
+
+### Opción 2 o cierre
+Sale inmediatamente y retorna al menú principal.
+
+### Control de flujo
+El bucle se repite hasta que el usuario ingresa la opción de volver al menú principal (2) o cierra el submenú.
 
 
 ---
- ## Interacciones Case 6:
+ ## Interacciones Case 5:
 
 - Sale del programa.
-  
 ---
-  
----
-
+## Contribuciones
+- Matías Fuentes: Implementación de la estructura principal, uso de librerías  y funciones de agrupación por tipo.
+- Bastián Guerra: Desarrollo del menú y lógica de búsqueda por variedad y nombre.
+- Nestor Calderón: Apoyo en pruebas, validación de entradas y limpieza de datos.
+## Agradecimientos
+- Cubitect, por la librería de Cubiomes.
+- PeterAlfredLee y Alanscut, por la librería de cJSON.
+### Nota al profesor.
+Profesor, si está leyendo esto, sabemos que dijimos que haríamos una visualización 3D, pero por cuestiones de tiempo, organización y cuestiones técnicas con cubiomes y las librerias, no pudimos implementarlo, sin embargo, pudimos implementar la visualización 2D en reemplazo de la 3D.
