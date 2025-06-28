@@ -6,11 +6,11 @@
 #include "extra.h"
 #include "criteria.h"
 #include "cargacriterios.h"
-#include "cargacriterios.c"
 #include "search.h"
 #include "search_cli.h"
 #include "generator.h"
 #include "kd_tree.h"
+#include "visualizer.h"
 
 #define TOTAL_BIOMAS 10
 #define MAX_BIOMAS_USUARIO 2
@@ -29,8 +29,7 @@
 // Funciones de comunicación con el usuario
 
 
-void menuPrincipal()
-{
+void menuPrincipal(){
     puts("===== SeedAnalyzer Menu =====");
     puts("1. Crear nuevos criterios de búsqueda");
     puts("2. Cargar criterios existentes");
@@ -40,8 +39,7 @@ void menuPrincipal()
     puts("=============================");
 }
 
-void menuOpcion1()
-{
+void menuOpcion1(){
     puts("===== Crear Nuevos Criterios =====");
     puts("1. Definir biomas deseados");
     puts("2. Definir estructuras deseadas");
@@ -70,8 +68,7 @@ void menuOpcion3(){
 void menuOpcion4(){
     puts("====== Visualización de Zonas Candidatas =====");
     puts("1. Visualización 2D con Cubiomes");
-    puts("2. Visualización 3D");
-    puts("3. Volver al menú principal");
+    puts("2. Volver al menú principal");
 }
 
 // Funciones interactivas del programa
@@ -110,41 +107,51 @@ void ejecutarOpcion1(criterioBusqueda *c){
     }   while (opcion != 6);
 }
 
+
 void ejecutarOpcion2(criterioBusqueda *c) {
     int opcion;
-    char *archivos[] = {
-        "criteria_montaña.json",
-        "criteria_oceano.json",
-        "criteria_village_bioma.json"
-    };
-    int cantidadArchivos = 3;
 
     do {
         limpiarPantalla();
         menuOpcion2();
 
-        for (int i = 0; i < cantidadArchivos; i++) {
-            printf("%d. %s\n", i + 1, archivos[i]);
-        }
-        puts("Volver al menu principal");
+        puts("1. Guardar criterios actuales en un archivo .json");
+        puts("0. ---> Volver al menu principal");
         puts("========================================");
+        printf("\nSeleccione una opcion: ");
 
-        printf("\nSeleccione el numero del archivo que desea cargar: ");
-        opcion = leerOpcion(0, cantidadArchivos);
+        opcion = leerOpcion(0, 1);
 
-        if (opcion == 0) {
-            puts("Volviendo al menu principal...");
-            break;
-        }
+        switch (opcion) {
+            case 1: {
+                // Verificar si hay criterios definidos
+                if (list_size(c->biomasRequeridos) == 0 &&
+                    list_size(c->estructurasRequeridas) == 0 &&
+                    list_size(c->coordenadasIniciales) == 0 &&
+                    list_size(c->radioBusquedaEnChunks) == 0) {
+                    puts("\nPrimero debes definir tus criterios antes de poder guardarlos :)");
+                    break;
+                }
 
-        char *archivoSeleccionado = archivos[opcion - 1];
-        printf("\nCargando archivo: %s\n", archivoSeleccionado);
+                // Continuar con el guardado
+                char nombreArchivo[128];
+                printf("\nIngrese el nombre del archivo para guardar los criterios: ");
+                scanf("%127s", nombreArchivo);
 
-        if (cargarCriteriosDesdeJSON(c, archivoSeleccionado)) {
-            puts("Criterios cargados exitosamente.");
-            resumenCriterios(c, 1);
-        } else {
-            puts("Error al cargar los criterios. Verifique el archivo.");
+                if (guardarCriteriosEnJSON(c, nombreArchivo)) {
+                    puts("\nCriterios guardados exitosamente.");
+                } else {
+                    puts("\nError al guardar los criterios.");
+                }
+                break;
+            }
+
+            case 0:
+                puts("Volviendo al menu principal...");
+                break;
+
+            default:
+                puts("Opcion invalida.");
         }
 
         presioneEnterParaContinuar();
@@ -152,46 +159,52 @@ void ejecutarOpcion2(criterioBusqueda *c) {
     } while (opcion != 0);
 }
 
-void ejecutarOpcion3(criterioBusqueda *c, KDTree *arbolito){
-    
+void ejecutarOpcion3(criterioBusqueda *c,
+                     KDTree *arbolito,
+                     uint64_t *pseed,
+                     RegionResult **lastResultsPtr,
+                     int *lastCountPtr) {
     int opcion;
-    uint64_t seed_value = 0;
-    uint64_t *pseed = &seed_value;
 
-    RegionResult *lastResults = NULL;
-    int lastCount = 0;
-    
     do {
         limpiarPantalla();
         menuOpcion3();
-        printf("\nSeleccione una opción: "); opcion = leerOpcion(1, 4);
-        switch(opcion)
-        {
+        printf("\nSeleccione una opción: ");
+        opcion = leerOpcion(1, 4);
+
+        switch (opcion) {
             case 1:
-                if (lastResults) {
-                    free(lastResults);
-                    lastResults = NULL;
-                    lastCount = 0;
+                // Ejecutar búsqueda y guardar resultados
+                if (*lastResultsPtr) {
+                    free(*lastResultsPtr);
+                    *lastResultsPtr = NULL;
+                    *lastCountPtr  = 0;
                 }
-                realizarBusqueda(c, pseed, &lastResults, &lastCount);
+                realizarBusqueda(c, pseed, lastResultsPtr, lastCountPtr);
                 break;
+
             case 2:
+                // Modificar semilla
                 modificarSemilla(pseed);
                 break;
-            case 3: 
-                mostrarResultados(c, seed_value, lastResults, lastCount, arbolito);
+
+            case 3:
+                mostrarResultados(c, *pseed, *lastResultsPtr, *lastCountPtr, arbolito );
                 break;
+
             case 4:
                 puts("Volviendo al menú principal...");
                 break;
+
             default:
                 puts("Opción no válida.");
                 presioneEnterParaContinuar();
+                break;
         }
     } while (opcion != 4);
 }
 
-void ejecutarOpcion4(criterioBusqueda *c, KDTree *arbolito){
+void ejecutarOpcion4(criterioBusqueda *c, KDTree *arbolito, uint64_t *pseed, RegionResult *lastResults, int lastCount){
     
     int opcion;
 
@@ -202,14 +215,10 @@ void ejecutarOpcion4(criterioBusqueda *c, KDTree *arbolito){
         switch(opcion)
         {
             case 1:
-                //visualizar2D();
+                visualizer2d(c, *pseed, lastResults, lastCount);
                 break;
-            case 2:
-                // Visualizar 3d
-                break;
-            case 3: 
+            case 2: 
                 puts("Volviendo al menú principal");
-                presioneEnterParaContinuar();
                 return;
             default:
                 puts("Opción no válida.");
@@ -220,8 +229,15 @@ void ejecutarOpcion4(criterioBusqueda *c, KDTree *arbolito){
 
 int main(){
     criterioBusqueda *criterioUsuario = setDefaultCriterio();
+    
     int opcion;
     KDTree *arbolito = kd_create(2);
+
+    uint64_t seed_value = 0;
+    uint64_t *pseed = &seed_value;
+
+    RegionResult *lastResults = NULL;
+    int lastCount = 0;
 
     do
     {
@@ -235,13 +251,19 @@ int main(){
                 ejecutarOpcion1(criterioUsuario);
                 break;
             case 2:
-                ejecutarOpcion2(criterioUsuario);
+                //ejecutarOpcion2(criterioUsuario);
                 break;
             case 3:
-                ejecutarOpcion3(criterioUsuario, arbolito);
+                ejecutarOpcion3(
+                        criterioUsuario,
+                        arbolito,
+                        pseed,
+                        &lastResults,   // RegionResult**
+                        &lastCount      // int*
+                    );
                 break;
             case 4:
-                ejecutarOpcion4(criterioUsuario, arbolito);
+                ejecutarOpcion4(criterioUsuario, arbolito, pseed, lastResults, lastCount);
                 break;
             case 5:
                 puts("Saliendo del programa...");

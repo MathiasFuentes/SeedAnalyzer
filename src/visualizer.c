@@ -1,124 +1,234 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
+
+#include "finders.h"
+#include "extra.h"
 #include "visualizer.h"
-#include "util.h"       // parseBiomeColors, biomesToImage
+#include "search_cli.h"    // leerOpcion(), presioneEnterParaContinuar()
+#include "util.h"          // allocCache(), genBiomes(), initBiomeColors(), biomesToImage()
+#include "criteria.h"      // criterioBusqueda, ID
+#include "list.h"          // list_index()
 
-// Estado interno
-static char g_outPath[256];
-static int  g_originX, g_originZ;
-static unsigned g_pixscale;
-static int  g_width, g_height;
-static unsigned char *g_pixels = NULL;
-static unsigned char g_biomeColors[256][3];
+// internal state
+static char          g_outPath[256];
+static int           g_originX, g_originZ;
+static unsigned      g_pixscale;
+static int           g_width, g_height;
+static unsigned char *g_pixels;
+static unsigned char  g_biomeColors[256][3];
 
-void visualizer_option(){
-    
-}
-
+// ----------------------------------------------------------------
+// viz_init
+// ----------------------------------------------------------------
 void viz_init(const char *outImagePath,
-              int originX, int originZ,
-              unsigned pixscale)
+              int originX,
+              int originZ,
+              unsigned pixscale,
+              int widthChunks,
+              int heightChunks)
 {
-    // Guardar configuración
-    // Cambiamos extensión a .ppm si es .png
+    // build .ppm filename
     const char *ext = strrchr(outImagePath, '.');
-    if (ext && strcmp(ext, ".png")==0) {
+    if (ext && strcmp(ext, ".png") == 0) {
         snprintf(g_outPath, sizeof(g_outPath),
                  "%.*s.ppm",
                  (int)(ext - outImagePath),
                  outImagePath);
     } else {
-        strncpy(g_outPath, outImagePath, sizeof(g_outPath));
+        strncpy(g_outPath, outImagePath, sizeof(g_outPath) - 1);
         g_outPath[sizeof(g_outPath)-1] = '\0';
     }
 
-    g_originX = originX;
-    g_originZ = originZ;
+    g_originX  = originX;
+    g_originZ  = originZ;
     g_pixscale = pixscale;
-    g_width  = 64 * pixscale;
-    g_height = 64 * pixscale;
+    g_width    = widthChunks  * pixscale;
+    g_height   = heightChunks * pixscale;
 
-    // Reserva buffer RGB
-    g_pixels = malloc(g_width * g_height * 3);
+    // allocate pixel buffer
+    g_pixels = malloc((size_t)g_width * g_height * 3);
     if (!g_pixels) {
-        fprintf(stderr, "[viz] No hay memoria para imagen\n");
+        fprintf(stderr, "[viz] alloc failed\n");
         exit(1);
     }
 
-    // Carga paleta desde palette.txt
-    FILE *f = fopen("palette.txt", "r");
-    if (!f) {
-        fprintf(stderr, "[viz] palette.txt no encontrado\n");
-        exit(1);
-    }
-    fseek(f, 0, SEEK_END);
-    long sz = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    char *buf = malloc(sz+1);
-    fread(buf,1,sz,f);
-    buf[sz]='\0';
-    fclose(f);
-
-    if (parseBiomeColors(g_biomeColors, buf)!=0) {
-        fprintf(stderr,"[viz] Error parseando palette.txt\n");
-        exit(1);
-    }
-    free(buf);
+    // load the official Cubiomes palette
+    initBiomeColors(g_biomeColors);
 }
 
+// ----------------------------------------------------------------
+// viz_drawBiomes
+// ----------------------------------------------------------------
 void viz_drawBiomes(const int *cache)
 {
-    biomesToImage(g_pixels,
-                  (unsigned char(*)[3])g_biomeColors,
-                  cache,
-                  64,64,
-                  g_pixscale,
-                  1);
+    biomesToImage(
+      g_pixels,
+      (unsigned char (*)[3])g_biomeColors,
+      cache,
+      g_width / g_pixscale,
+      g_height / g_pixscale,
+      g_pixscale,
+      1  // flip vertically
+    );
 }
 
-// Dibuja un cruce de 5px en (cx,cy)
-static void draw_cross(int cx,int cy,
-                       unsigned char r,
-                       unsigned char g,
-                       unsigned char b)
+// ----------------------------------------------------------------
+// draw a little X cross
+// ----------------------------------------------------------------
+static void draw_cross(int px, int py,
+                       unsigned char R,
+                       unsigned char G,
+                       unsigned char B)
 {
-    for(int dy=-2;dy<=2;++dy){
-        int y=cy+dy, x1=cx+dy, x2=cx-dy;
-        if(x1>=0&&x1<g_width&&y>=0&&y<g_height){
-            unsigned idx=(y*g_width+x1)*3;
-            g_pixels[idx]=r;g_pixels[idx+1]=g;g_pixels[idx+2]=b;
+    for (int d = -2; d <= 2; ++d) {
+        int x1 = px + d, y1 = py + d;
+        int x2 = px + d, y2 = py - d;
+        if (x1>=0 && x1<g_width && y1>=0 && y1<g_height) {
+            size_t idx = ((size_t)y1 * g_width + x1)*3;
+            g_pixels[idx+0] = R;
+            g_pixels[idx+1] = G;
+            g_pixels[idx+2] = B;
         }
-        if(x2>=0&&x2<g_width&&y>=0&&y<g_height){
-            unsigned idx=(y*g_width+x2)*3;
-            g_pixels[idx]=r;g_pixels[idx+1]=g;g_pixels[idx+2]=b;
+        if (x2>=0 && x2<g_width && y2>=0 && y2<g_height) {
+            size_t idx = ((size_t)y2 * g_width + x2)*3;
+            g_pixels[idx+0] = R;
+            g_pixels[idx+1] = G;
+            g_pixels[idx+2] = B;
         }
     }
 }
 
-void viz_addInterest(int chunkX,int chunkZ)
+// ----------------------------------------------------------------
+// viz_addInterest / viz_setUser
+// ----------------------------------------------------------------
+void viz_addInterest(int chunkX, int chunkZ)
 {
-    int px=(chunkX-g_originX)*g_pixscale+g_pixscale/2;
-    int pz=(chunkZ-g_originZ)*g_pixscale+g_pixscale/2;
-    draw_cross(px,pz,255,0,0);
+    int px = (chunkX - g_originX) * g_pixscale + g_pixscale/2;
+    int py = (chunkZ - g_originZ) * g_pixscale + g_pixscale/2;
+    draw_cross(px, py, 255, 0, 0);
 }
 
-void viz_setUser(int chunkX,int chunkZ)
+void viz_setUser(int chunkX, int chunkZ)
 {
-    int px=(chunkX-g_originX)*g_pixscale+g_pixscale/2;
-    int pz=(chunkZ-g_originZ)*g_pixscale+g_pixscale/2;
-    draw_cross(px,pz,0,0,255);
+    int px = (chunkX - g_originX) * g_pixscale + g_pixscale/2;
+    int py = (chunkZ - g_originZ) * g_pixscale + g_pixscale/2;
+    draw_cross(px, py, 0, 0, 255);
 }
 
+// ----------------------------------------------------------------
+// viz_render
+// ----------------------------------------------------------------
 void viz_render(void)
 {
-    // Escribe PPM (P6)
-    FILE *f = fopen(g_outPath,"wb");
-    if (!f) { perror("[viz] fopen"); exit(1); }
-    fprintf(f,"P6\n%d %d\n255\n", g_width, g_height);
-    fwrite(g_pixels,1,g_width*g_height*3,f);
+    FILE *f = fopen(g_outPath, "wb");
+    if (!f) {
+        perror("[viz] fopen");
+        exit(1);
+    }
+    // P6 header
+    fprintf(f, "P6\n%d %d\n255\n", g_width, g_height);
+    fwrite(g_pixels, 1, (size_t)g_width * g_height * 3, f);
     fclose(f);
     free(g_pixels);
-    printf("Imagen guardada en %s\n", g_outPath);
+    g_pixels = NULL;
+    printf("Image saved as %s\n", g_outPath);
+}
+
+// ----------------------------------------------------------------
+// visualizer2d
+// ----------------------------------------------------------------
+void visualizer2d(criterioBusqueda *c,
+                  uint64_t seed,
+                  RegionResult *arr,
+                  int count)
+{
+    if (count <= 0) {
+        puts("No hay zonas para visualizar. Ejecuta primero la búsqueda.");
+        presioneEnterParaContinuar();
+        return;
+    }
+
+    // list up to 15 candidates
+    int n = count < 15 ? count : 15;
+    puts("Elige una zona para visualizar:");
+    for (int i = 0; i < n; ++i) {
+        printf(" [%2d] x=%5d, z=%5d  dist=%.1f\n",
+               i+1, arr[i].x0, arr[i].z0, arr[i].distance);
+    }
+    printf("Selecciona (1-%d) o 0 para cancelar: ", n);
+    int sel = leerOpcion(0, n);
+    if (sel == 0) {
+        puts("Visualización cancelada.");
+        presioneEnterParaContinuar();
+        return;
+    }
+    RegionResult *r = &arr[sel-1];
+
+    const unsigned pixscale = 4;
+    const int BASE    = 64;
+    const int MARGIN  = 10;
+    const int CANW    = BASE + 2 * MARGIN;
+    const int CANH    = CANW;
+
+    // 1) init canvas around chosen zone + margin
+    viz_init("zona_seleccionada.ppm",
+             r->x0 - MARGIN,
+             r->z0 - MARGIN,
+             pixscale,
+             CANW, CANH);
+
+    // 2) regen biomes
+    Generator gen;
+    setupGenerator(&gen, MC_1_16, 0);
+    applySeed(&gen, DIM_OVERWORLD, seed);
+
+    // note: Range = {unitSize, startX, startZ, widthChunks, heightChunks, biomeLayer, structures}
+    Range range = { 16, r->x0 - MARGIN, r->z0 - MARGIN, CANW, CANH, 0, 1 };
+    int *cache = allocCache(&gen, range);
+    genBiomes(&gen, cache, range);
+
+    // 3) draw it
+    viz_drawBiomes(cache);
+
+    // 4) markers: user + chosen + each required biome/structure
+    if (list_size(c->coordenadasIniciales) > 0) {
+        int *uc = list_index(c->coordenadasIniciales, 0);
+        viz_setUser(uc[0], uc[1]);
+    }
+    viz_addInterest(r->x0, r->z0);
+    // highlight first occurrence of each required biome
+    for (int i = 0; i < list_size(c->biomasRequeridos); ++i) {
+        ID *bid = list_index(c->biomasRequeridos, i);
+        int bioId = biome_name_to_id(bid->nombreCub);
+        bool marked = false;
+        for (int z = 0; z < BASE && !marked; ++z)
+        for (int x = 0; x < BASE && !marked; ++x) {
+            if (cache[z * BASE + x] == bioId) {
+                viz_addInterest(r->x0 + x, r->z0 + z);
+                marked = true;
+            }
+        }
+    }
+    // highlight each required structure
+    for (int i = 0; i < list_size(c->estructurasRequeridas); ++i) {
+        ID *sid = list_index(c->estructurasRequeridas, i);
+        int st = struct_name_to_type(sid->nombreCub);
+        bool marked = false;
+        for (int z = 0; z < BASE && !marked; ++z)
+        for (int x = 0; x < BASE && !marked; ++x) {
+            if (isViableStructurePos(st, &gen,
+                 r->x0 + x, r->z0 + z, DIM_OVERWORLD))
+            {
+                viz_addInterest(r->x0 + x, r->z0 + z);
+                marked = true;
+            }
+        }
+    }
+
+    free(cache);
+
+    // 5) render
+    viz_render();
+    presioneEnterParaContinuar();
 }

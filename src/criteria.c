@@ -13,10 +13,10 @@
 #define TOTAL_BIOMAS 10
 #define TOTAL_ESTRUCTURAS 7
 
+
 /* 
     Lista de los principales biomas de Minecraft con sus nombres en español y en inglés.
 */
-
 ID Biomas[TOTAL_BIOMAS] = {
     {"Pradera", "plains"},
     {"Bosque", "forest"},
@@ -30,6 +30,10 @@ ID Biomas[TOTAL_BIOMAS] = {
     {"Bosque oscuro", "dark_forest"},
 };
 
+
+/* 
+    Lista de estructuras disponibles con nombres en español y en inglés 
+*/
 ID Estructuras[TOTAL_ESTRUCTURAS] = {
     {"Aldea", "village"},
     {"Templo del desierto", "desert_pyramid"},
@@ -45,7 +49,6 @@ ID Estructuras[TOTAL_ESTRUCTURAS] = {
     Función que inicializa un criterio de búsqueda con valores por defecto.
     Se asigna memoria para el criterio y se establecen valores iniciales.
 */
-
 criterioBusqueda* setDefaultCriterio() {
     criterioBusqueda *c = malloc(sizeof(criterioBusqueda));
 
@@ -60,22 +63,38 @@ criterioBusqueda* setDefaultCriterio() {
     return c;
 }
 
+/* 
+    Muestra la lista de biomas disponibles por consola 
+*/
 void mostrarBiomasDisponibles(ID listaBiomas[]) {
     for (int i = 0; i < TOTAL_BIOMAS; i++) {
         printf("%d. %s (%s)\n", i + 1, listaBiomas[i].nombreEsp, listaBiomas[i].nombreCub);
     }
 }
 
+/* 
+    Muestra la lista de estructuras disponibles por consola 
+*/
 void mostrarEstructurasDisponibles(ID listaEstructuras[]) {
     for (int i = 0; i < TOTAL_ESTRUCTURAS; i++) {
         printf("%d. %s (%s)\n", i + 1, listaEstructuras[i].nombreEsp, listaEstructuras[i].nombreCub);
     }
 }
 
+
+/*
+     Compara dos estructuras ID usando el nombre en inglés (nombreCub).
+     Retorna 0 si son iguales, distinto de 0 si son diferentes.
+ */
 int compararID(void *ID1, void *ID2) {
     return strcmp(((ID *)ID1)->nombreCub, ((ID *)ID2)->nombreCub);
 }
 
+
+/*
+     Elimina todas las selecciones dentro de una lista específica
+     después de confirmar con el usuario.
+ */
 void eliminarTodasLasSelecciones(List *listaCriterios) {
     limpiarPantalla();
     puts("========= Eliminar Todas las Selecciones =========");
@@ -108,6 +127,11 @@ void eliminarTodasLasSelecciones(List *listaCriterios) {
     presioneEnterParaContinuar();
 }
 
+
+/*
+     Permite al usuario ingresar coordenadas o rango manualmente por consola.
+     Esta función es llamada para criterios que no tienen una lista fija de opciones (como coordenadas o rango).
+ */
 void seleccionPorConsola(List* listaCriterio, char* nombreCriterio, int MAX) {
     
     if (strcmp(nombreCriterio, "Coordenadas") == 0){
@@ -193,6 +217,11 @@ void seleccionPorConsola(List* listaCriterio, char* nombreCriterio, int MAX) {
     }
 }
 
+
+/*
+     Muestra las opciones disponibles para biomas o estructuras según el criterio especificado.
+     Retorna 1 si hay opciones para mostrar, 0 si el criterio requiere entrada manual, y -1 si es inválido.
+ */
 int mostrarOpcionesSeleccion(char* nombreCriterio)
 {
     if (strcmp(nombreCriterio, "Biomas") == 0) { mostrarBiomasDisponibles(Biomas); return 1;}
@@ -203,6 +232,10 @@ int mostrarOpcionesSeleccion(char* nombreCriterio)
     else{ return -1; }
 }
 
+/*
+     Permite al usuario agregar una nueva selección a la lista del criterio actual.
+     Maneja tanto selección desde una lista como ingreso manual.
+ */
 void nuevaSeleccion(List* listaCriterio, char* nombreCriterio, int MAX) {
     
     limpiarPantalla();
@@ -288,6 +321,10 @@ void nuevaSeleccion(List* listaCriterio, char* nombreCriterio, int MAX) {
     } while (1);
 }
 
+
+/*
+     Muestra el submenú para gestionar un criterio específico (agregar, ver, eliminar).
+ */
 void menuOpcionesCriterio(char* nombreCriterio) {
     printf("1. Nueva selección de %s\n", nombreCriterio);
     printf("2. Mostrar la selección de %s\n", nombreCriterio);
@@ -296,6 +333,11 @@ void menuOpcionesCriterio(char* nombreCriterio) {
     printf("5. Volver al menú de selección de criterios\n");
 }
 
+
+/*
+    Muestra en pantalla la selección actual de un criterio.
+    Adapta la presentación dependiendo si es un ID, coordenada o número.
+ */
 void mostrarSeleccion(List* listaCriterio, char* nombreCriterio, int flag){
     if (flag == 1) {limpiarPantalla();}
 
@@ -340,6 +382,11 @@ void mostrarSeleccion(List* listaCriterio, char* nombreCriterio, int flag){
 
 }
 
+
+/*
+     Permite eliminar una selección específica del criterio actual.
+     Para coordenadas y rango, limpia toda la lista directamente.
+ */
 void eliminarSeleccion(List* listaCriterio, char* nombreCriterio) {
     limpiarPantalla();
     printf("========= Eliminar Una Selección de %s =========\n", nombreCriterio);
@@ -383,6 +430,11 @@ void eliminarSeleccion(List* listaCriterio, char* nombreCriterio) {
     }
 }
 
+
+/*
+     Muestra el menú interactivo para definir o modificar las selecciones del usuario
+     en relación a un criterio específico (biomas, estructuras, coordenadas o rango).
+ */
 void almacenarCriterio(List* listaCriterio, char* nombreCriterio, int MAX){
     limpiarPantalla();
     
@@ -433,7 +485,10 @@ void almacenarCriterio(List* listaCriterio, char* nombreCriterio, int MAX){
 
 }
 
-
+/*
+     Muestra un resumen completo de los criterios actuales definidos por el usuario,
+     incluyendo biomas, estructuras, coordenadas y rango.
+ */
 void resumenCriterios(criterioBusqueda *criterioUsuario, int flag) {
     
     limpiarPantalla();
@@ -466,10 +521,5 @@ void resumenCriterios(criterioBusqueda *criterioUsuario, int flag) {
 
     if (flag == 1) {puts("\n===============================================");}
     if (flag == 1) {presioneEnterParaContinuar();}
-    return;
-}
-
-void almacenarCriterios(criterioBusqueda *c) {
-    // Implementación pendiente.
     return;
 }

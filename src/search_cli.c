@@ -340,11 +340,13 @@ void mostrarResultados(const criterioBusqueda *c,
         return;
     }
 
+    uint64_t _seed = seed;
+
     int toShow = count < 15 ? count : 15;
     Scored tmp[15];
     for (int i = 0; i < toShow; ++i) {
         tmp[i].res   = &arr[i];
-        tmp[i].score = compute_region_score(c, seed, &arr[i]);
+        tmp[i].score = compute_region_score(c, _seed, &arr[i]);
         double *pd = malloc(sizeof(double));
         *pd = tmp[i].score;
         KDPoint pt = { .x = arr[i].x0, .z = arr[i].z0, .data = pd };
