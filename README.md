@@ -35,7 +35,7 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
 
 - Tener instalada la librería Cubiomes (ver instrucciones en su repositorio oficial).
 
-- Para la visualización 3D, necesitas Python con matplotlib instalado.
+- Para la visualización 2D, necesitas Python con matplotlib instalado.
 
 ---
 ### Pasos para compilar y ejecutar:
@@ -87,11 +87,7 @@ Ya sea que estés buscando una aldea cerca de un bioma específico, un océano j
  - Ejecución real del análisis con Cubiomes.
 
  - Ranking de zonas candidatas y selección óptima.
-
- - Visualización 3D del resultado con 
-    ```
-     plot.py.
-    ```
+   
 ---
 # Diseño del sistema y estructura de datos
 
@@ -207,6 +203,65 @@ Imprime en pantalla un resumen con todos los valores actuales:
 
  - Sale del submenú y retorna al menú principal.
    
+---
+
+    ### Case 2:
+  ```
+  ====== Cargar Criterios Recibidos ======
+  Estos son algunos ejemplos de archivos .json:
+   --> criteria_montana.json
+   --> criteria_oceano.json
+   --> criteria_village_bioma.json
+
+  Seleccione una opcion (0,1)
+  1. Guardar criterios actuales en un archivo .json
+  0. ---> Volver al menu principal
+  ========================================
+
+  Seleccione una opcion: 
+  ```
+
+  ---
+  ## Características del Case 2:
+
+  Esta opción permite al usuario guardar los criterios de búsqueda que definió previamente (en la opción 1) en un archivo 
+    ```
+    .json. 
+    ```
+    
+  De esta manera, los criterios quedan registrados para ser reutilizados más adelante o compartidos.
+
+  ## ¿Qué se guarda?
+  
+  - Biomas deseados
+    
+  - Estructuras deseadas
+
+  - Coordenadas iniciales
+
+  - Rango de búsqueda
+
+Todo esto se escribe en formato JSON legible y reutilizable.
+
+  ## Requisito
+
+  Antes de guardar, el usuario debe haber definido sus criterios. Si aún no lo ha hecho, el sistema mostrará el siguiente mensaje:
+  
+  ```
+  Primero debes definir tus criterios antes de poder guardarlos
+  ```
+
+  ## Ejemplo de archivo generado: 
+
+  ```
+  {
+  "biomas": ["ocean", "plains"],
+  "estructuras": ["village", "ruined_portal"],
+  "coordenadas": [100, 200],
+  "radio": 64
+}
+
+  ```
 ---
 
 
