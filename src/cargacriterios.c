@@ -12,6 +12,9 @@
 #define CRITERIA_DIR "./criteria/"
 #define MAX_ARCHIVOS 100
 
+// Divide una cadena separada por comas y agrega los valores a la lista correspondiente.
+// Se utiliza para biomas y estructuras.
+// Si el tipo es "bioma" o "estructura", se reserva memoria para un ID y se almacena el nombre.
 void splitYAgregarALista(List *lista, const char *str, const char *tipo) {
     char copia[512];
     strcpy(copia, str);
@@ -29,6 +32,8 @@ void splitYAgregarALista(List *lista, const char *str, const char *tipo) {
     }
 }
 
+// Divide una cadena con coordenadas separadas por coma (ej: "100,-300").
+// Cada valor se convierte a entero y se agrega a la lista como puntero a entero.
 void splitYAgregarCoordenadas(List *lista, const char *str) {
     char copia[512];
     strcpy(copia, str);
@@ -43,6 +48,7 @@ void splitYAgregarCoordenadas(List *lista, const char *str) {
     }
 }
 
+// Lee criterios de búsqueda desde un archivo de texto (.txt o .cfg).
 int leerCriterioDesdeArchivo(criterioBusqueda *c, const char *ruta) {
     FILE *fp = fopen(ruta, "r");
     if (fp == NULL) {
@@ -79,54 +85,8 @@ int leerCriterioDesdeArchivo(criterioBusqueda *c, const char *ruta) {
     return 1;
 }
 
-/*
-void menuCargarCriterios(criterioBusqueda *c) {
-    DIR *dir;
-    struct dirent *ent;
-    char archivos[MAX_ARCHIVOS][256];
-    int total = 0;
-
-    dir = opendir(CRITERIA_DIR);
-    if (dir == NULL) {
-        perror("No se pudo abrir la carpeta de criterios");
-        return;
-    }
-
-    printf("===== Archivos de criterios disponibles =====\n");
-    while ((ent = readdir(dir)) != NULL) {
-        if (ent->d_type == DT_REG) {
-            printf("%d) %s\n", total + 1, ent->d_name);
-            strcpy(archivos[total], ent->d_name);
-            total++;
-        }
-    }
-    closedir(dir);
-
-    if (total == 0) {
-        printf("No hay archivos de criterios guardados.\n");
-        presioneEnterParaContinuar();
-        return;
-    }
-
-    printf("Seleccione un archivo (1-%d): ", total);
-    int opcion = leerOpcion(1, total);
-
-    char ruta[512];
-    strcpy(ruta, CRITERIA_DIR);
-    strcat(ruta, archivos[opcion - 1]);
-
-    printf("Cargando archivo: %s\n", ruta);
-
-    if (leerCriterioDesdeArchivo(c, ruta)) {
-        printf("Criterios cargados correctamente.\n");
-    } else {
-        printf("Error al cargar el archivo.\n");
-    }
-
-    presioneEnterParaContinuar();
-}
-*/
-
+// Guarda los criterios actuales en un archivo JSON.
+// Usa la biblioteca cJSON para generar un objeto estructurado.
 int guardarCriteriosEnJSON(criterioBusqueda *c, const char *nombreArchivo) {
     if (!c || !nombreArchivo) return 0;
 
