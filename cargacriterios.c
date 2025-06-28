@@ -127,75 +127,53 @@ void menuCargarCriterios(criterioBusqueda *c) {
 }
 */
 
-int cargarCriteriosDesdeJSON(criterioBusqueda *c, const char *nombreArchivo) {
-    FILE *file = fopen(nombreArchivo, "r");
-    if (!file) return 0;
+int guardarCriteriosEnJSON(criterioBusqueda *c, const char *nombreArchivo) {
+    if (!c || !nombreArchivo) return 0;
 
-    fseek(file, 0, SEEK_END);
-    long length = ftell(file);
-    rewind(file);
+    cJSON *jsonRoot = cJSON_CreateObject();
 
-    char *contenido = malloc(length + 1);
-    fread(contenido, 1, length, file);
-    contenido[length] = '\0';
-    fclose(file);
+    // Biomas
+    cJSON *biomas = cJSON_CreateArray();
+    for (void *ptr = list_first(c->biomasRequeridos); ptr != NULL; ptr = list_next(c->biomasRequeridos)) {
+        cJSON_AddItemToArray(biomas, cJSON_CreateString((char *)ptr));
+    }
+    cJSON_AddItemToObject(jsonRoot, "biomas", biomas);
 
-    cJSON *json = cJSON_Parse(contenido);
-    free(contenido);
+    // Estructuras
+    cJSON *estructuras = cJSON_CreateArray();
+    for (void *ptr = list_first(c->estructurasRequeridas); ptr != NULL; ptr = list_next(c->estructurasRequeridas)) {
+        cJSON_AddItemToArray(estructuras, cJSON_CreateString((char *)ptr));
+    }
+    cJSON_AddItemToObject(jsonRoot, "estructuras", estructuras);
 
-    if (!json) {
-        printf("Error al parsear el archivo JSON\n");
+    // Coordenadas
+    cJSON *coordenadas = cJSON_CreateArray();
+    for (void *ptr = list_first(c->coordenadasIniciales); ptr != NULL; ptr = list_next(c->coordenadasIniciales)) {
+        cJSON_AddItemToArray(coordenadas, cJSON_CreateNumber(*(int *)ptr));
+    }
+    cJSON_AddItemToObject(jsonRoot, "coordenadas", coordenadas);
+
+    // Radio
+    int *radioPtr = list_first(c->radioBusquedaEnChunks);
+    cJSON_AddNumberToObject(jsonRoot, "radio", radioPtr ? *radioPtr : 0);
+
+    // Generar JSON formateado
+    char *jsonString = cJSON_Print(jsonRoot);
+
+    // Escribir a archivo
+    FILE *file = fopen(nombreArchivo, "w");
+    if (!file) {
+        cJSON_Delete(jsonRoot);
+        free(jsonString);
         return 0;
     }
 
-    // Limpiar listas anteriores
-    list_clean(c->biomasRequeridos);
-    list_clean(c->estructurasRequeridas);
-    list_clean(c->coordenadasIniciales);
-    list_clean(c->radioBusquedaEnChunks);
+    fputs(jsonString, file);
+    fclose(file);
 
-    // Biomas
-    cJSON *biomas = cJSON_GetObjectItemCaseSensitive(json, "biomas");
-    if (cJSON_IsArray(biomas)) {
-        cJSON *bioma = NULL;
-        cJSON_ArrayForEach(bioma, biomas) {
-            if (cJSON_IsString(bioma)) {
-                char *biomaStr = strdup(bioma->valuestring);
-                list_pushBack(c->biomasRequeridos, biomaStr);
-            }
-        }
-    }
+    // Liberar memoria
+    cJSON_Delete(jsonRoot);
+    free(jsonString);
 
-    // Estructuras
-    cJSON *estructuras = cJSON_GetObjectItemCaseSensitive(json, "estructuras");
-    if (cJSON_IsArray(estructuras)) {
-        cJSON *estructura = NULL;
-        cJSON_ArrayForEach(estructura, estructuras) {
-            if (cJSON_IsString(estructura)) {
-                char *estructuraStr = strdup(estructura->valuestring);
-                list_pushBack(c->estructurasRequeridas, estructuraStr);
-            }
-        }
-    }
-
-    // Coordenadas
-    cJSON *coordenadas = cJSON_GetObjectItemCaseSensitive(json, "coordenadas");
-    if (cJSON_IsArray(coordenadas) && cJSON_GetArraySize(coordenadas) == 2) {
-        for (int i = 0; i < 2; i++) {
-            int *valor = malloc(sizeof(int));
-            *valor = cJSON_GetArrayItem(coordenadas, i)->valueint;
-            list_pushBack(c->coordenadasIniciales, valor);
-        }
-    }
-
-    // Radio
-    cJSON *radio = cJSON_GetObjectItemCaseSensitive(json, "radio");
-    if (cJSON_IsNumber(radio)) {
-        int *valor = malloc(sizeof(int));
-        *valor = radio->valueint;
-        list_pushBack(c->radioBusquedaEnChunks, valor);
-    }
-
-    cJSON_Delete(json);
-    return 1;
+    return 1;  // Éxito
 }

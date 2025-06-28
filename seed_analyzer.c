@@ -31,9 +31,9 @@
 
 void menuPrincipal(){
     puts("===== SeedAnalyzer Menu =====");
-    puts("1. Crear nuevos criterios de búsqueda");
+    puts("1. Crear nuevos criterios de busqueda");
     puts("2. Cargar criterios existentes");
-    puts("3. Realizar búsqueda con criterios actuales");
+    puts("3. Realizar busqueda con criterios actuales");
     puts("4. Visualizar Resultados");
     puts("5. Salir del programa");
     puts("=============================");
@@ -43,26 +43,27 @@ void menuOpcion1(){
     puts("===== Crear Nuevos Criterios =====");
     puts("1. Definir biomas deseados");
     puts("2. Definir estructuras deseadas");
-    puts("3. Definir coordenadas específicas");
-    puts("4. Definir rango de búsqueda");
+    puts("3. Definir coordenadas especificas");
+    puts("4. Definir rango de busqueda");
     puts("5. Resumen de criterios seleccionados");
     puts("6. Volver al menú principal");
 }
 
 void menuOpcion2(){
-    puts("====== Cargar Criterios Existentes ======");
-    puts("Se encontraron los siguientes archivos .json:");
-    puts("1. criteria_montaña.json");
-    puts("2. criteria_oceano.json");
-    puts("3. criteria_village_bioma.json");
+    puts("====== Cargar Criterios Recibidos ======");
+    puts("Estos son algunos ejemplos de archivos .json:");
+    puts(" --> criteria_montana.json");
+    puts(" --> criteria_oceano.json");
+    puts(" --> criteria_village_bioma.json\n");
+    puts("Seleccione una opcion (0,1)");
 }
 
 void menuOpcion3(){
     puts("====== Realizar Búsqueda de la Zona =====");
-    puts("1. Iniciar búsqueda con criterios actuales");
-    puts("2. Modificar semilla de búsqueda");
-    puts("3. Ver resultados de la búsqueda");
-    puts("4. Volver al menú principal");
+    puts("1. Iniciar busqueda con criterios actuales");
+    puts("2. Modificar semilla de busqueda");
+    puts("3. Ver resultados de la busqueda");
+    puts("4. Volver al menu principal");
 }
 
 void menuOpcion4(){
@@ -79,7 +80,7 @@ void ejecutarOpcion1(criterioBusqueda *c){
     do  {
         limpiarPantalla();
         menuOpcion1();
-        printf("\nSeleccione una opción: "); opcion = leerOpcion(1, 6);
+        printf("\nSeleccione una opcion: "); opcion = leerOpcion(1, 6);
         switch(opcion)
         {
             case 1:
@@ -98,10 +99,10 @@ void ejecutarOpcion1(criterioBusqueda *c){
                 resumenCriterios(c, 1);
                 break;
             case 6:
-                puts("Volviendo al menú principal...");
+                puts("Volviendo al menu principal...");
                 break;
             default:
-                puts("Opción no válida.");
+                puts("Opción no valida.");
                 presioneEnterParaContinuar();
         }
     }   while (opcion != 6);
@@ -159,20 +160,32 @@ void ejecutarOpcion2(criterioBusqueda *c) {
     } while (opcion != 0);
 }
 
+<<<<<<< HEAD
 void ejecutarOpcion3(criterioBusqueda *c,
                      KDTree *arbolito,
                      uint64_t *pseed,
                      RegionResult **lastResultsPtr,
                      int *lastCountPtr) {
+=======
+
+void ejecutarOpcion3(criterioBusqueda *c, KDTree *arbolito){
+    
+>>>>>>> 9e2d39b8c93a6aca12bc8cea3a8959dc8e55f1bf
     int opcion;
 
     do {
         limpiarPantalla();
         menuOpcion3();
+<<<<<<< HEAD
         printf("\nSeleccione una opción: ");
         opcion = leerOpcion(1, 4);
 
         switch (opcion) {
+=======
+        printf("\nSeleccione una opcion: "); opcion = leerOpcion(1, 4);
+        switch(opcion)
+        {
+>>>>>>> 9e2d39b8c93a6aca12bc8cea3a8959dc8e55f1bf
             case 1:
                 // Ejecutar búsqueda y guardar resultados
                 if (*lastResultsPtr) {
@@ -193,35 +206,49 @@ void ejecutarOpcion3(criterioBusqueda *c,
                 break;
 
             case 4:
-                puts("Volviendo al menú principal...");
+                puts("Volviendo al menu principal...");
                 break;
 
             default:
-                puts("Opción no válida.");
+                puts("Opcion no valida.");
                 presioneEnterParaContinuar();
                 break;
         }
     } while (opcion != 4);
 }
 
+<<<<<<< HEAD
 void ejecutarOpcion4(criterioBusqueda *c, KDTree *arbolito, uint64_t *pseed, RegionResult *lastResults, int lastCount){
+=======
+
+void ejecutarOpcion4(criterioBusqueda *c, KDTree *arbolito){
+>>>>>>> 9e2d39b8c93a6aca12bc8cea3a8959dc8e55f1bf
     
     int opcion;
 
     do {
         limpiarPantalla();
         menuOpcion4();
-        printf("\nSeleccione una opción: "); opcion = leerOpcion(1, 4);
+        printf("\nSeleccione una opcion: "); opcion = leerOpcion(1, 4);
         switch(opcion)
         {
             case 1:
                 visualizer2d(c, *pseed, lastResults, lastCount);
                 break;
+<<<<<<< HEAD
             case 2: 
                 puts("Volviendo al menú principal");
+=======
+            case 2:
+                // Visualizar 3d
+                break;
+            case 3: 
+                puts("Volviendo al menu principal");
+                presioneEnterParaContinuar();
+>>>>>>> 9e2d39b8c93a6aca12bc8cea3a8959dc8e55f1bf
                 return;
             default:
-                puts("Opción no válida.");
+                puts("Opcion no valida.");
                 presioneEnterParaContinuar();
         }
     } while (opcion != 3);
@@ -243,7 +270,7 @@ int main(){
     {
         limpiarPantalla();
         menuPrincipal();
-        printf("Seleccione una opción: "); opcion = leerOpcion(1, 5);
+        printf("Seleccione una opcion: "); opcion = leerOpcion(1, 5);
         
         switch(opcion)
         {
@@ -269,7 +296,7 @@ int main(){
                 puts("Saliendo del programa...");
                 break;
             default:
-                puts("Opción no válida, por favor intente de nuevo.");
+                puts("Opcion no valida, por favor intente de nuevo.");
         }
         presioneEnterParaContinuar();
     } while(opcion != 5);
