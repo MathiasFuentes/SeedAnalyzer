@@ -205,7 +205,7 @@ Imprime en pantalla un resumen con todos los valores actuales:
    
 ---
 
-    ### Case 2:
+  ### Case 2:  
   ```
   ====== Cargar Criterios Recibidos ======
   Estos son algunos ejemplos de archivos .json:
@@ -263,8 +263,6 @@ Todo esto se escribe en formato JSON legible y reutilizable.
 
   ```
 ---
-
-
 
 
   ### Case 3: 
