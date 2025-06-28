@@ -26,9 +26,9 @@
         ./seed_analyzer
 */
 
-// Funciones de comunicación con el usuario
 
 
+// Menú principal con las opciones globales del programa
 void menuPrincipal(){
     puts("===== SeedAnalyzer Menu =====");
     puts("1. Crear nuevos criterios de busqueda");
@@ -39,6 +39,7 @@ void menuPrincipal(){
     puts("=============================");
 }
 
+// Menú para definir nuevos criterios de búsqueda
 void menuOpcion1(){
     puts("===== Crear Nuevos Criterios =====");
     puts("1. Definir biomas deseados");
@@ -49,6 +50,7 @@ void menuOpcion1(){
     puts("6. Volver al menú principal");
 }
 
+// Menú para guardar o cargar criterios desde archivo
 void menuOpcion2(){
     puts("====== Cargar Criterios Recibidos ======");
     puts("Estos son algunos ejemplos de archivos .json:");
@@ -58,6 +60,7 @@ void menuOpcion2(){
     puts("Seleccione una opcion (0,1)");
 }
 
+// Menú para ejecutar la búsqueda con criterios definidos
 void menuOpcion3(){
     puts("====== Realizar Búsqueda de la Zona =====");
     puts("1. Iniciar busqueda con criterios actuales");
@@ -66,14 +69,15 @@ void menuOpcion3(){
     puts("4. Volver al menu principal");
 }
 
+// Menú para visualización de resultados (ej. Cubiomes)
 void menuOpcion4(){
     puts("====== Visualización de Zonas Candidatas =====");
     puts("1. Visualización 2D con Cubiomes");
     puts("2. Volver al menú principal");
 }
 
-// Funciones interactivas del programa
 
+// Ejecuta las acciones relacionadas con la definición de criterios de búsqueda
 void ejecutarOpcion1(criterioBusqueda *c){
     int opcion;
 
@@ -109,6 +113,7 @@ void ejecutarOpcion1(criterioBusqueda *c){
 }
 
 
+// Permite guardar los criterios actuales a un archivo .json
 void ejecutarOpcion2(criterioBusqueda *c) {
     int opcion;
 
@@ -162,6 +167,7 @@ void ejecutarOpcion2(criterioBusqueda *c) {
     } while (1);
 }
 
+// Realiza la búsqueda con los criterios definidos, permite modificar la semilla o visualizar resultados
 void ejecutarOpcion3(criterioBusqueda *c,
                      KDTree *arbolito,
                      uint64_t *pseed,
@@ -207,6 +213,8 @@ void ejecutarOpcion3(criterioBusqueda *c,
     } while (opcion != 4);
 }
 
+
+// Llama a la visualización 2D de los resultados con Cubiomes
 void ejecutarOpcion4(criterioBusqueda *c, KDTree *arbolito, uint64_t *pseed, RegionResult *lastResults, int lastCount){
     
     int opcion;
@@ -230,6 +238,13 @@ void ejecutarOpcion4(criterioBusqueda *c, KDTree *arbolito, uint64_t *pseed, Reg
     } while (opcion != 3);
 }
 
+
+/*
+    Función principal: controla el ciclo de ejecución del programa.
+    - Inicializa estructuras de criterios y árbol KD.
+    - Permite al usuario navegar por el menú principal.
+    - Gestiona las llamadas a las distintas funcionalidades.
+*/
 int main(){
     criterioBusqueda *criterioUsuario = setDefaultCriterio();
     
