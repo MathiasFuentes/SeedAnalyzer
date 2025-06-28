@@ -132,7 +132,9 @@ void viz_render(void)
     fclose(f);
     free(g_pixels);
     g_pixels = NULL;
-    printf("Image saved as %s\n", g_outPath);
+    printf("Imagen guardada como %s\n", g_outPath);
+    puts("Sólo debes ejecutar 'visor.py' y listo!! :D");
+
 }
 
 // ----------------------------------------------------------------

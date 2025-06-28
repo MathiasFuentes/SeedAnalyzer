@@ -3,8 +3,8 @@
 
 #include "criteria.h"
 
-void menuCargarCriterios(criterioBusqueda *c);
+// void menuCargarCriterios(criterioBusqueda *c);
 int leerCriterioDesdeArchivo(criterioBusqueda *c, const char *ruta);
-int cargarCriteriosDesdeJSON(criterioBusqueda *c, const char *nombreArchivo);
+int guardarCriteriosEnJSON(criterioBusqueda *c, const char *nombreArchivo);
 
 #endif

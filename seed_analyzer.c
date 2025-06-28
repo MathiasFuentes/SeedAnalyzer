@@ -131,7 +131,8 @@ void ejecutarOpcion2(criterioBusqueda *c) {
                     list_size(c->coordenadasIniciales) == 0 &&
                     list_size(c->radioBusquedaEnChunks) == 0) {
                     puts("\nPrimero debes definir tus criterios antes de poder guardarlos :)");
-                    break;
+                    presioneEnterParaContinuar();
+                    return;
                 }
 
                 // Continuar con el guardado
@@ -144,48 +145,37 @@ void ejecutarOpcion2(criterioBusqueda *c) {
                 } else {
                     puts("\nError al guardar los criterios.");
                 }
-                break;
+                presioneEnterParaContinuar();
+                return;
             }
 
             case 0:
                 puts("Volviendo al menu principal...");
-                break;
+                presioneEnterParaContinuar();
+                return;
 
             default:
                 puts("Opcion invalida.");
+                presioneEnterParaContinuar();
+                break;
         }
-
-        presioneEnterParaContinuar();
-
-    } while (opcion != 0);
+    } while (1);
 }
 
-<<<<<<< HEAD
 void ejecutarOpcion3(criterioBusqueda *c,
                      KDTree *arbolito,
                      uint64_t *pseed,
                      RegionResult **lastResultsPtr,
                      int *lastCountPtr) {
-=======
-
-void ejecutarOpcion3(criterioBusqueda *c, KDTree *arbolito){
-    
->>>>>>> 9e2d39b8c93a6aca12bc8cea3a8959dc8e55f1bf
     int opcion;
 
     do {
         limpiarPantalla();
         menuOpcion3();
-<<<<<<< HEAD
         printf("\nSeleccione una opción: ");
         opcion = leerOpcion(1, 4);
 
         switch (opcion) {
-=======
-        printf("\nSeleccione una opcion: "); opcion = leerOpcion(1, 4);
-        switch(opcion)
-        {
->>>>>>> 9e2d39b8c93a6aca12bc8cea3a8959dc8e55f1bf
             case 1:
                 // Ejecutar búsqueda y guardar resultados
                 if (*lastResultsPtr) {
@@ -217,12 +207,7 @@ void ejecutarOpcion3(criterioBusqueda *c, KDTree *arbolito){
     } while (opcion != 4);
 }
 
-<<<<<<< HEAD
 void ejecutarOpcion4(criterioBusqueda *c, KDTree *arbolito, uint64_t *pseed, RegionResult *lastResults, int lastCount){
-=======
-
-void ejecutarOpcion4(criterioBusqueda *c, KDTree *arbolito){
->>>>>>> 9e2d39b8c93a6aca12bc8cea3a8959dc8e55f1bf
     
     int opcion;
 
@@ -235,17 +220,8 @@ void ejecutarOpcion4(criterioBusqueda *c, KDTree *arbolito){
             case 1:
                 visualizer2d(c, *pseed, lastResults, lastCount);
                 break;
-<<<<<<< HEAD
             case 2: 
                 puts("Volviendo al menú principal");
-=======
-            case 2:
-                // Visualizar 3d
-                break;
-            case 3: 
-                puts("Volviendo al menu principal");
-                presioneEnterParaContinuar();
->>>>>>> 9e2d39b8c93a6aca12bc8cea3a8959dc8e55f1bf
                 return;
             default:
                 puts("Opcion no valida.");
@@ -278,7 +254,7 @@ int main(){
                 ejecutarOpcion1(criterioUsuario);
                 break;
             case 2:
-                //ejecutarOpcion2(criterioUsuario);
+                ejecutarOpcion2(criterioUsuario);
                 break;
             case 3:
                 ejecutarOpcion3(

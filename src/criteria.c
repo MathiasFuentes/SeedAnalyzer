@@ -137,10 +137,10 @@ void seleccionPorConsola(List* listaCriterio, char* nombreCriterio, int MAX) {
     if (strcmp(nombreCriterio, "Coordenadas") == 0){
         
         int x, z;
-        puts("Advertencia: Las coordenadas deben estar en el rango de -1000 a 1000.");
+        puts("Advertencia: Las coordenadas deben estar en el rango de 0 a 500, tanto en X como en Z");
 
         printf("\nIngrese la coordenada inicial en x: ");
-        x = leerOpcion(-1000, 1000);
+        x = leerOpcion(0, 1000);
         if (x == -1)
         {
             puts("Entrada no válida. Debe ingresar un número entre -1000 y 1000.");
@@ -419,7 +419,9 @@ void eliminarSeleccion(List* listaCriterio, char* nombreCriterio) {
 
         ID *seleccion = list_index(listaCriterio, opcion - 1);
         list_popCurrent(listaCriterio);
-        printf("Selección '%s' eliminada correctamente.\n", seleccion->nombreEsp);  
+        printf("Selección '%s' eliminada correctamente.\n", seleccion->nombreEsp);
+        presioneEnterParaContinuar();
+        return;
     }
 
     if (strcmp(nombreCriterio, "Coordenadas") == 0 || strcmp(nombreCriterio, "Rango") == 0) {

@@ -49,7 +49,7 @@ int realizarBusqueda(criterioBusqueda* c,
     if (!cumpleRequisitosBusqueda(c, pseed))
     {
         puts("Debes completar tus criterios y/o tu seed para hacer una búsqueda...");
-        printf("%" PRIu64 "\n", *pseed);
+        //printf("%" PRIu64 "\n", *pseed);
         presioneEnterParaContinuar();
         return -1;
     }
