@@ -248,7 +248,7 @@ Todo esto se escribe en formato JSON legible y reutilizable.
   Antes de guardar, el usuario debe haber definido sus criterios. Si aún no lo ha hecho, el sistema mostrará el siguiente mensaje:
   
   ```
-  Primero debes definir tus criterios antes de poder guardarlos
+  Primero debes definir tus criterios antes de poder guardarlos :)
   ```
 
   ## Ejemplo de archivo generado: 
